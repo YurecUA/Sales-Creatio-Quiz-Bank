@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Creatio Quiz Bank</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary: #3f51b5;
+  --primary-dark: #303f9f;
+  --primary-light: #c5cae9;
+  --accent: #7c4dff;
+  --accent-light: #b388ff;
+  --success: #4caf50;
+  --success-bg: #e8f5e9;
+  --error: #f44336;
+  --error-bg: #ffebee;
+  --warn: #ff9800;
+  --open-color: #00897b;
+  --open-bg: #e0f2f1;
+  --sidebar-bg: #1a1a2e;
+  --sidebar-hover: #16213e;
+  --sidebar-active: #0f3460;
+  --card-bg: #ffffff;
+  --body-bg: #f5f5f5;
+  --text: #212121;
+  --text-secondary: #757575;
+  --text-light: #bdbdbd;
+  --border: #e0e0e0;
+  --shadow: 0 2px 4px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+  --shadow-hover: 0 4px 8px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.08);
+  --radius: 8px;
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html {
+  height: 100%;
+  height: -webkit-fill-available;
+}
+body {
+  height: 100%;
+  height: -webkit-fill-available;
+  font-family: 'Roboto', sans-serif;
+  background: var(--body-bg);
+  color: var(--text);
+  overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+  /* iOS Safari: prevent elastic overscroll on body */
+  overscroll-behavior: none;
+}
+
+.app-layout {
+  display: flex;
+  height: 100vh;
+  height: -webkit-fill-available;
+}
+
+.sidebar { width: 320px; min-width: 320px; background: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column; overflow: hidden; z-index: 10; box-shadow: 2px 0 12px rgba(0,0,0,0.3); }
+.sidebar-header { padding: 24px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.sidebar-header h1 { font-size: 18px; font-weight: 500; letter-spacing: 0.5px; color: #fff; margin-bottom: 4px; }
+.sidebar-header p { font-size: 12px; color: rgba(255,255,255,0.5); letter-spacing: 0.3px; }
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 8px 0; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.sidebar-nav::-webkit-scrollbar { width: 4px; }
+.sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+.sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+
+.nav-item { display: flex; align-items: center; padding: 12px 20px; cursor: pointer; transition: all var(--transition); border-left: 3px solid transparent; gap: 12px; }
+.nav-item:hover { background: var(--sidebar-hover); }
+.nav-item.active { background: var(--sidebar-active); border-left-color: var(--accent-light); }
+.nav-item .material-icons { font-size: 20px; color: rgba(255,255,255,0.6); }
+.nav-item.active .material-icons { color: var(--accent-light); }
+.nav-item-text { flex: 1; min-width: 0; }
+.nav-item-title { font-size: 13px; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: rgba(255,255,255,0.9); }
+.nav-item.active .nav-item-title { font-weight: 500; color: #fff; }
+.nav-item-subtitle { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+.badge { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; padding: 0 8px; border-radius: 12px; font-size: 11px; font-weight: 500; background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); }
+.nav-item.active .badge { background: var(--accent); color: #fff; }
+
+.main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.toolbar { display: flex; align-items: center; padding: 0 24px; height: 64px; min-height: 64px; background: var(--card-bg); border-bottom: 1px solid var(--border); gap: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.toolbar-title { flex: 1; font-size: 18px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.toolbar-stats { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-secondary); }
+.toolbar-stats .chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: 500; background: var(--primary-light); color: var(--primary-dark); }
+.toolbar-stats .chip .material-icons { font-size: 16px; }
+
+.mode-toggle { display: flex; background: var(--body-bg); border-radius: 24px; padding: 3px; gap: 2px; }
+.mode-btn { display: flex; align-items: center; gap: 6px; padding: 6px 16px; border: none; border-radius: 20px; background: transparent; color: var(--text-secondary); font-family: 'Roboto', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all var(--transition); }
+.mode-btn:hover { color: var(--text); }
+.mode-btn.active { background: var(--primary); color: #fff; box-shadow: 0 2px 8px rgba(63,81,181,0.3); }
+.mode-btn .material-icons { font-size: 18px; }
+
+.content-area { flex: 1; overflow-y: auto; padding: 24px; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.content-area::-webkit-scrollbar { width: 8px; }
+.content-area::-webkit-scrollbar-track { background: transparent; }
+.content-area::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+.content-area::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+.welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: var(--text-secondary); }
+.welcome .material-icons { font-size: 80px; color: var(--primary-light); margin-bottom: 24px; }
+.welcome h2 { font-size: 24px; font-weight: 300; color: var(--text); margin-bottom: 8px; }
+.welcome p { font-size: 14px; max-width: 400px; line-height: 1.6; }
+
+.question-card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 16px; transition: box-shadow var(--transition); animation: fadeInUp 0.3s ease forwards; opacity: 0; }
+.question-card:hover { box-shadow: var(--shadow-hover); }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.question-card:nth-child(1) { animation-delay: 0.02s; }
+.question-card:nth-child(2) { animation-delay: 0.04s; }
+.question-card:nth-child(3) { animation-delay: 0.06s; }
+.question-card:nth-child(4) { animation-delay: 0.08s; }
+.question-card:nth-child(5) { animation-delay: 0.1s; }
+.question-card:nth-child(n+6) { animation-delay: 0.12s; }
+
+.question-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+.question-number { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; min-width: 32px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 13px; font-weight: 500; }
+.question-text { flex: 1; font-size: 15px; line-height: 1.6; color: var(--text); font-weight: 400; }
+.question-type-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+.question-type-badge.multi { background: #e8eaf6; color: #3f51b5; }
+.question-type-badge.single { background: #f3e5f5; color: #7b1fa2; }
+.question-type-badge.open { background: var(--open-bg); color: var(--open-color); }
+.question-type-badge .material-icons { font-size: 14px; }
+
+.answers-list { list-style: none; margin-top: 8px; }
+.answer-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border-radius: 6px; margin-bottom: 4px; font-size: 14px; line-height: 1.5; transition: background var(--transition); }
+.answer-item.correct { background: var(--success-bg); }
+.answer-item .answer-icon { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; min-width: 22px; margin-top: 1px; }
+.answer-item .answer-icon .material-icons { font-size: 20px; }
+.answer-item.correct .answer-icon .material-icons { color: var(--success); }
+.answer-item:not(.correct) .answer-icon .material-icons { color: var(--text-light); }
+.answer-item .answer-text { flex: 1; color: var(--text); }
+.answer-item.correct .answer-text { font-weight: 500; color: #2e7d32; }
+
+.open-answer-box { background: var(--open-bg); border-radius: 6px; padding: 14px 16px; margin-top: 8px; color: var(--open-color); font-size: 13px; display: flex; align-items: flex-start; gap: 8px; }
+.open-answer-box .material-icons { font-size: 18px; margin-top: 1px; flex-shrink: 0; }
+
+.test-container { max-width: 800px; margin: 0 auto; }
+.test-progress { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding: 16px 20px; background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); }
+.progress-bar-container { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.progress-bar { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 3px; transition: width 0.4s ease; }
+.progress-text { font-size: 13px; font-weight: 500; color: var(--text-secondary); white-space: nowrap; }
+
+.test-question-card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 32px; margin-bottom: 16px; animation: fadeInUp 0.3s ease forwards; }
+.test-answer-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; border: 2px solid var(--border); transition: all var(--transition); user-select: none; }
+.test-answer-item:hover { border-color: var(--primary-light); background: #f5f7ff; }
+.test-answer-item.selected { border-color: var(--primary); background: #e8eaf6; }
+.test-answer-item.checked.correct-selected { border-color: var(--success); background: var(--success-bg); }
+.test-answer-item.checked.wrong-selected { border-color: var(--error); background: var(--error-bg); }
+.test-answer-item.checked.correct-not-selected { border-color: var(--success); background: var(--success-bg); opacity: 0.7; }
+.test-answer-item .checkbox-icon { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; min-width: 24px; border-radius: 4px; border: 2px solid var(--text-light); transition: all var(--transition); margin-top: 1px; }
+.test-answer-item.single-choice .checkbox-icon { border-radius: 50%; }
+.test-answer-item.selected .checkbox-icon { border-color: var(--primary); background: var(--primary); }
+.test-answer-item.selected .checkbox-icon .material-icons { color: #fff; font-size: 18px; }
+.test-answer-item:not(.selected) .checkbox-icon .material-icons { display: none; }
+.test-answer-item.checked.correct-selected .checkbox-icon { border-color: var(--success); background: var(--success); }
+.test-answer-item.checked.wrong-selected .checkbox-icon { border-color: var(--error); background: var(--error); }
+.test-answer-item.checked.correct-not-selected .checkbox-icon { border-color: var(--success); background: transparent; }
+.test-answer-text { flex: 1; font-size: 14px; line-height: 1.5; }
+
+.open-test-area { margin-top: 16px; }
+.open-test-area textarea { width: 100%; min-height: 120px; padding: 14px 16px; border: 2px solid var(--border); border-radius: 8px; font-family: 'Roboto', sans-serif; font-size: 14px; line-height: 1.6; color: var(--text); resize: vertical; transition: border-color var(--transition); outline: none; }
+.open-test-area textarea:focus { border-color: var(--primary); }
+.open-test-area textarea.checked { border-color: var(--open-color); background: var(--open-bg); }
+.open-hint { margin-top: 10px; font-size: 13px; color: var(--open-color); background: var(--open-bg); padding: 10px 14px; border-radius: 6px; display: flex; gap: 8px; align-items: flex-start; }
+.open-hint .material-icons { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
+
+.test-actions { display: flex; align-items: center; justify-content: space-between; margin-top: 24px; gap: 12px; }
+
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; border: none; border-radius: 24px; font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all var(--transition); text-transform: uppercase; letter-spacing: 0.5px; }
+.btn .material-icons { font-size: 20px; }
+.btn-primary { background: var(--primary); color: #fff; box-shadow: 0 2px 8px rgba(63,81,181,0.3); }
+.btn-primary:hover { background: var(--primary-dark); box-shadow: 0 4px 12px rgba(63,81,181,0.4); }
+.btn-primary:disabled { background: #bbb; box-shadow: none; cursor: not-allowed; }
+.btn-accent { background: var(--accent); color: #fff; box-shadow: 0 2px 8px rgba(124,77,255,0.3); }
+.btn-accent:hover { box-shadow: 0 4px 12px rgba(124,77,255,0.4); }
+.btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
+.btn-outline:hover { background: #e8eaf6; }
+.btn-text { background: transparent; color: var(--text-secondary); padding: 10px 16px; }
+.btn-text:hover { background: rgba(0,0,0,0.04); color: var(--text); }
+.btn-success { background: var(--success); color: #fff; box-shadow: 0 2px 8px rgba(76,175,80,0.3); }
+.btn-success:hover { box-shadow: 0 4px 12px rgba(76,175,80,0.4); }
+.btn-teal { background: var(--open-color); color: #fff; box-shadow: 0 2px 8px rgba(0,137,123,0.3); }
+.btn-teal:hover { box-shadow: 0 4px 12px rgba(0,137,123,0.4); }
+
+.score-card { background: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow-hover); padding: 48px; text-align: center; max-width: 500px; margin: 48px auto; animation: fadeInUp 0.4s ease forwards; }
+.score-circle { width: 160px; height: 160px; margin: 0 auto 32px; position: relative; }
+.score-circle svg { transform: rotate(-90deg); }
+.score-circle .score-value { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 36px; font-weight: 700; color: var(--text); }
+.score-circle .score-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, calc(-50% + 24px)); font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+.score-card h2 { font-size: 24px; font-weight: 500; margin-bottom: 8px; }
+.score-card p { font-size: 14px; color: var(--text-secondary); margin-bottom: 32px; }
+.score-details { display: flex; justify-content: center; gap: 32px; margin-bottom: 32px; }
+.score-detail { text-align: center; }
+.score-detail .value { font-size: 28px; font-weight: 700; }
+.score-detail .label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+.score-detail.correct .value { color: var(--success); }
+.score-detail.wrong .value { color: var(--error); }
+.score-detail.open-q .value { color: var(--open-color); }
+
+.hamburger-btn { display: none; align-items: center; justify-content: center; width: 40px; height: 40px; border: none; border-radius: 50%; background: transparent; color: var(--text); cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
+.hamburger-btn:hover { background: rgba(0,0,0,0.06); }
+.sidebar-overlay { display: none; position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: rgba(0,0,0,0.5); z-index: 99; opacity: 0; transition: opacity 0.3s ease; -webkit-tap-highlight-color: transparent; cursor: pointer; }
+.sidebar-overlay.visible { display: block; opacity: 1; }
+
+@media (max-width: 900px) {
+  .sidebar { width: 260px; min-width: 260px; }
+  .content-area { padding: 16px; }
+  .toolbar { padding: 0 16px; }
+}
+@media (max-width: 768px) {
+  .hamburger-btn { display: flex; }
+  .sidebar { position: fixed; top: 0; left: 0; width: 300px; min-width: 300px; height: 100%; max-height: 100%; -webkit-transform: translateX(-100%); transform: translateX(-100%); transition: -webkit-transform 0.3s cubic-bezier(0.4,0,0.2,1); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); z-index: 100; overflow-y: auto; }
+  .sidebar.open { -webkit-transform: translateX(0); transform: translateX(0); }
+  .toolbar { padding: 0 12px; height: 56px; min-height: 56px; gap: 8px; }
+  .toolbar-title { font-size: 15px; }
+  .toolbar-stats { display: none; }
+  .mode-toggle { padding: 2px; }
+  .mode-btn { padding: 5px 10px; font-size: 12px; gap: 4px; }
+  .mode-btn .material-icons { font-size: 16px; }
+  .content-area { padding: 12px; }
+  .question-card { padding: 16px; margin-bottom: 12px; }
+  .test-question-card { padding: 20px; }
+  .test-actions { flex-wrap: wrap; justify-content: center; }
+  .score-card { padding: 32px 20px; margin: 24px auto; }
+  .score-circle { width: 130px; height: 130px; }
+  .score-circle .score-value { font-size: 28px; }
+  .score-details { gap: 20px; }
+  .score-detail .value { font-size: 22px; }
+}
+@media (max-width: 400px) {
+  .sidebar { width: 85vw; min-width: 85vw; }
+  .mode-btn span:not(.material-icons) { display: none; }
+  .mode-btn { padding: 6px 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app-layout" id="app">
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1>Sales Creatio</h1>
+      <p>CERTIFICATION QUIZ BANK</p>
+    </div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+  </aside>
+
+  <main class="main-content">
+    <div class="toolbar" id="toolbar">
+      <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+        <span class="material-icons">menu</span>
+      </button>
+      <div class="toolbar-title" id="toolbar-title">Select a quiz</div>
+      <div class="toolbar-stats" id="toolbar-stats"></div>
+      <div class="mode-toggle" id="mode-toggle" style="display:none;">
+        <button class="mode-btn active" data-mode="browse" onclick="setMode('browse')">
+          <span class="material-icons">menu_book</span><span>Browse</span>
+        </button>
+        <button class="mode-btn" data-mode="test" onclick="setMode('test')">
+          <span class="material-icons">quiz</span><span>Test</span>
+        </button>
+      </div>
+    </div>
+    <div class="content-area" id="content-area">
+      <div class="welcome">
+        <span class="material-icons">school</span>
+        <h2>Welcome to Quiz Bank</h2>
+        <p>Select a quiz from the sidebar to browse questions or take a practice test. Each test uses a random pool of questions, just like the real exam.</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+
+<script type="application/json" id="quiz-data">
+{"exportedAt":"2026-04-15T22:43:45.206Z","sourcePage":"https://academy.creatio.com/group/23/module/58/restart-activity/68","totalSidebarItems":12,"quizzes":[{"ok":true,"pageTitle":"Sales Creatio Quiz","activityTitle":"Platform basics","href":"https://academy.creatio.com/group/23/module/58/restart-activity/68","itemId":"68","type":"restart-activity","contentId":155,"h5pLibrary":"H5P.QuestionSet 1.20","originalPoolSize":3,"totalQuestions":6,"randomQuestions":true,"progressType":"textual","questions":[{"id":1,"subContentId":"ca2fc6dc-6ff1-4a16-a751-e7977c6aad90","title":"Untitled Multiple Choice","question":"What is the purpose of using aggregated filters in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Filtering records of a Creatio object by their connected records in another object with reverse connection","correct":true},{"id":2,"text":"Filtering records of a Creatio object by the often-used parameters","correct":false},{"id":3,"text":"Filtering records of a Creatio object by the specified values of one or several columns","correct":false},{"id":4,"text":"Filtering records of a Creatio object by the columns of its connected objects","correct":false},{"id":5,"text":"Filtering records of a Creatio object with grouping of filtering conditions","correct":false}]},{"id":2,"subContentId":"63bad9b6-dd09-4e19-bdce-fd7448463dc5","title":"Untitled Multiple Choice","question":"What feature does the Communication Panel in Creatio Freedom UI provide?","multiSelect":true,"answers":[{"id":1,"text":"Manage emails and make/receive calls.","correct":true},{"id":2,"text":"View and post user feed messages.","correct":true},{"id":3,"text":"Chat with customers.","correct":true},{"id":4,"text":"Processing user cases","correct":false}]},{"id":3,"subContentId":"f146fe31-771a-42c0-8992-0b30ba33c807","title":"Untitled Multiple Choice","question":"What is the purpose of the [Feed] section?","multiSelect":false,"answers":[{"id":1,"text":"Displaying the latest activity in Creatio of all or only the selected users","correct":false},{"id":2,"text":"Displaying messages connected with Creatio objects and messages from the channels a user is subscribed to, ensuring communication between employees","correct":true},{"id":3,"text":"Registering cases received from the self-service portal","correct":false},{"id":4,"text":"Processing user feedback","correct":false},{"id":5,"text":"Informing the company news","correct":false}]},{"id":4,"subContentId":"ff81f2d3-d08c-4d18-b871-ef6136309074","title":"Untitled Multiple Choice","question":"What is \u201cSystem Designer\u201d in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"A set of tools used for configuring the system","correct":true},{"id":2,"text":"A visual editor enabling you to set up the system layout","correct":false},{"id":3,"text":"A visual editor enabling you to create and set up email template","correct":false},{"id":4,"text":"A tool for managing configuration used by developer","correct":false}]},{"id":5,"subContentId":"5f982a0b-2dd7-450f-ac7e-e87d63ee9df0","title":"Untitled Multiple Choice","question":"What steps are involved in turning on Freedom UI for existing Creatio instances?","multiSelect":false,"answers":[{"id":1,"text":"Turn on the Freedom UI shell from the UI Management section.","correct":true},{"id":2,"text":"It can only be achieved by installing a third-party plugin.","correct":false},{"id":3,"text":"It requires changing the server operating system.","correct":false},{"id":4,"text":"Updating the web browser.","correct":false}]},{"id":6,"subContentId":"83e47b2b-a97c-415f-8a99-0ee8eda94f60","title":"Untitled Multiple Choice","question":"How does Creatio handle reminders and approval notifications in the Notification panel?","multiSelect":true,"answers":[{"id":1,"text":"Reminders and approval notifications remain active until they are processed.","correct":true},{"id":2,"text":"Feed notifications are marked as read when you open the corresponding tab.","correct":true},{"id":3,"text":"The history of read notifications is stored on the tab for a month since their creation","correct":true},{"id":4,"text":"Notifications about noteworthy events are stored on the tab for a month since their creation.","correct":true}]}]},{"ok":true,"pageTitle":"Sales Creatio Quiz","activityTitle":"CRM tools","href":"https://academy.creatio.com/group/23/module/58/restart-activity/65","itemId":"65","type":"restart-activity","contentId":29,"h5pLibrary":"H5P.QuestionSet 1.20","originalPoolSize":3,"totalQuestions":10,"randomQuestions":true,"progressType":"textual","questions":[{"id":1,"subContentId":"0d4ee0e3-9eb4-4d6c-82ae-74e41cd72ba5","title":"What is the purpose of the [Contacts] section?","question":"What is the purpose of the [Contacts] section?","multiSelect":false,"answers":[{"id":1,"text":"Managing information about contacts, group them by various parameters, and analyze the history of interactions with contacts","correct":true},{"id":2,"text":"Generating, editing and populating the partner database","correct":false},{"id":3,"text":"Registering information about companies that are partners, suppliers, sub-contractors or customers","correct":false},{"id":4,"text":"Determining what operations the Contacts can perform and what data they can see","correct":false}]},{"id":2,"subContentId":"ad63f8c8-2a9c-4818-9b51-ae0f26afe93f","title":"What is the purpose of the [Accounts] section in Creatio?","question":"What is the purpose of the [Accounts] section in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Managing information about accounts, group them by various parameters, and analyze the history of interactions","correct":true},{"id":2,"text":"Registering financial details of the partner companies and subcontractors","correct":false},{"id":3,"text":"Creating a registry list of legal documents connecting the company and its partners, subcontractors, suppliers and customers","correct":false},{"id":4,"text":"Communication with customers and partners, e.g., by sending emails","correct":false}]},{"id":3,"subContentId":"ac5f1553-f74c-4ab9-afdd-a5b891b695e5","title":"When can Creatio perform the duplicate search?","question":"When can Creatio perform the duplicate search?","multiSelect":true,"answers":[{"id":1,"text":"Each time a new record is created in these sections","correct":true},{"id":2,"text":"According to a pre-configured schedule","correct":true},{"id":3,"text":"Each working day","correct":true},{"id":4,"text":"Each time a record is edited in these sections","correct":true},{"id":5,"text":"Each time a user runs the corresponding business process in these sections","correct":true}]},{"id":4,"subContentId":"11aab4f5-c3e7-437d-8b61-18c40a2d2594","title":"Which of the following is available in the default [Tasks] section? Select all that apply.","question":"Which of the following is available in the default [Tasks] section? Select all that apply.","multiSelect":true,"answers":[{"id":1,"text":"Tasks timeline","correct":false},{"id":2,"text":"Task scheduling","correct":true},{"id":3,"text":"Viewing and planning the activities of other employees","correct":true},{"id":4,"text":"Prioritizing the Tasks","correct":true},{"id":5,"text":"Track interconnections between activities","correct":true}]},{"id":5,"subContentId":"2ca89f68-ce6d-4222-9096-4215c2e9fe2f","title":"What information do you store in the [Employees] section of Creatio?","question":"What information do you store in the [Employees] section of Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Full information about company employees, including personal data, contacts, information about career changes within the company","correct":true},{"id":2,"text":"The 360 view of all contacts who are employees of the partner companies, including their personal data, communication options, as well as the decision-making role","correct":false},{"id":3,"text":"Contact phone numbers, addresses and other communication options of the company employees","correct":false},{"id":4,"text":"Full names of all employees including segmentation by the support lines","correct":false}]},{"id":6,"subContentId":"5faafb76-2e49-4699-a0c1-e97f911832ff","title":"What is the purpose of the [Knowledge base] section in Creatio?","question":"What is the purpose of the [Knowledge base] section in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Managing the electronic catalog of the company\u2019s legal documents","correct":false},{"id":2,"text":"Managing the documents and the employee database","correct":false},{"id":3,"text":"Managing the company policy and regulations","correct":false},{"id":4,"text":"Managing the catalog of useful links for accessing marketing materials and promotional brochures","correct":false},{"id":5,"text":"Managing the digital library of reference information used by employees every day","correct":true}]},{"id":7,"subContentId":"d2e6d18f-cbae-4fca-abcf-1ad863c51f7b","title":"What is the purpose of the [Webhooks] section in Creatio?","question":"What is the purpose of the [Webhooks] section in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Analyzing incoming webhooks as well as view parsed results and errors in parsing","correct":true},{"id":2,"text":"Setting up the interface of landing pages","correct":false},{"id":3,"text":"Tracking and registering customer activities in Creatio using the company web site","correct":false},{"id":4,"text":"Creating landing pages by developer means","correct":false}]},{"id":8,"subContentId":"d3078586-701b-41ca-8095-b84f41e35eda","title":"What is a \u201cLanding page\u201d in the Creatio terminology?","question":"What is a \u201cLanding page\u201d in the Creatio terminology?","multiSelect":false,"answers":[{"id":1,"text":"The home page of the corporate web site","correct":false},{"id":2,"text":"An advertisement campaign targeted at attracting new leads and registering them in Creatio","correct":false},{"id":3,"text":"An element in the Process Designer","correct":false},{"id":4,"text":"A standalone website page that is designed for a call to action, which enables you to set up the registration of any new objects in Creatio","correct":true},{"id":5,"text":"A new lead created in Creatio via populating a web form or performing any other action on the company web site","correct":false}]},{"id":9,"subContentId":"3e228010-1bae-428a-8e98-831f23061cd3","title":"What is the purpose of Customer 360 app? Select all that apply","question":"What is the purpose of Customer 360 app? Select all that apply","multiSelect":true,"answers":[{"id":1,"text":"Creating and maintaining extensive databases of contacts and accounts","correct":true},{"id":2,"text":"Forecasting sales per Contact","correct":false},{"id":3,"text":"Managing internal employee schedules and tasks","correct":false},{"id":4,"text":"Viewing detailed customer interactions and history","correct":true},{"id":5,"text":"Represent any type of relationship between contacts and accounts in Creatio","correct":true}]},{"id":10,"subContentId":"1e8b6d50-c695-44ba-9ea2-fb3f6d6b7870","title":"What is the purpose of the Tags in Creatio?","question":"What is the purpose of the Tags in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Segmenting the records","correct":true},{"id":2,"text":"Controlling user permissions or access to records","correct":false},{"id":3,"text":"Creating automated workflows or triggers within the system","correct":false},{"id":4,"text":"Defining record relationships or hierarchies","correct":false}]}]},{"ok":true,"pageTitle":"Sales Creatio Quiz","activityTitle":"Sales tools","href":"https://academy.creatio.com/group/23/module/58/restart-activity/72","itemId":"72","type":"restart-activity","contentId":36,"h5pLibrary":"H5P.QuestionSet 1.20","originalPoolSize":10,"totalQuestions":20,"randomQuestions":true,"progressType":"textual","questions":[{"id":1,"subContentId":"76584039-ca4f-4dff-ad32-b074f0c9c1c6","title":"What is a \u201clead\u201d in the Creatio terminology?","question":"What is a \u201clead\u201d in the Creatio terminology?","multiSelect":false,"answers":[{"id":1,"text":"A potential customer ready to purchase your products or services","correct":false},{"id":2,"text":"A reference to an existing customer to a potential client for your company","correct":false},{"id":3,"text":"A potential or existing customer\u2019s need in your products or services","correct":true},{"id":4,"text":"A newly created record in the \u201cLeads\u201d section of Creatio","correct":false},{"id":5,"text":"A contact or account interested in your company\u2019s products or services","correct":false}]},{"id":2,"subContentId":"ab3b93e0-40ad-4e97-b5f8-b68e3c7dd55e","title":"What best defines the out-of-the-box \u201clead management\u201d process in Creatio?","question":"What best defines the out-of-the-box \u201clead management\u201d process in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Attracting potential customers via cold calls, TV ads, and other \u201coutbound\u201d channels","correct":false},{"id":2,"text":"Handling customer needs from initial detection to qualification and seamless handoff to the sales team","correct":true},{"id":3,"text":"Providing support to potential customers and processing their feedback","correct":false},{"id":4,"text":"Handing a potential customer to another team to gather more information on the this customer","correct":false},{"id":5,"text":"Establishing a relationship with potential customers and monitoring communication with them","correct":false}]},{"id":3,"subContentId":"5749ca81-6996-4007-ba9b-bf03a6ec28e1","title":"What is the purpose of the [Leads] section?","question":"What is the purpose of the [Leads] section?","multiSelect":false,"answers":[{"id":1,"text":"Managing confirmed interest in your product up to conversion of the lead into an opportunity","correct":true},{"id":2,"text":"Creating an audience of potential customers for marketing campaigns","correct":false},{"id":3,"text":"Adding potential customer accounts to Creatio","correct":false},{"id":4,"text":"Registering customers from landing pages","correct":false},{"id":5,"text":"Improving communication with potential customers","correct":false}]},{"id":4,"subContentId":"831d97ba-74f3-4e4c-ae2d-37a1faf2a249","title":"What is a \u201cSales pipeline\u201d in the Creatio terminology?","question":"What is a \u201cSales pipeline\u201d in the Creatio terminology?","multiSelect":false,"answers":[{"id":1,"text":"A tool that shows stages that a customer or a potential customer goes through from the moment of the first contact to signing the deal","correct":true},{"id":2,"text":"The ratio of successful and lost opportunities within a specified period","correct":false},{"id":3,"text":"Stages of lead nurturing and handing the lead off to sales","correct":false},{"id":4,"text":"A dashboard displaying the sales volume dynamics within a specified period","correct":false},{"id":5,"text":"Opportunities by owners","correct":false}]},{"id":5,"subContentId":"bc1da825-b427-4ed3-8da0-76b11e0c8936","title":"How can you track offers from competitors in Creatio when working with opportunities?","question":"How can you track offers from competitors in Creatio when working with opportunities?","multiSelect":false,"answers":[{"id":1,"text":"By using Competitors list on the opportunity form page to list competing products, their streghts and weaknesses","correct":true},{"id":2,"text":"It is impossible to track competitors\u2019 offers in Creatio","correct":false},{"id":3,"text":"By filling out Account profile with type Competitor and listing opportunities that our company competes with them","correct":false},{"id":4,"text":"By chatting with colleagues in the feed","correct":false}]},{"id":6,"subContentId":"582ea754-5468-45b0-b508-81128bd4166c","title":"What is the purpose of the [Opportunities] section?","question":"What is the purpose of the [Opportunities] section?","multiSelect":false,"answers":[{"id":1,"text":"Manage deals from qualification to closing the deal","correct":true},{"id":2,"text":"Manage customer needs in the company\u2019s offerings, qualifying and nurturing them","correct":false},{"id":3,"text":"View sales statistics and match actual sales volumes to the forecasted volumes","correct":false},{"id":4,"text":"Manage company\u2019s career opportunities, hiring and onboarding of new employees","correct":false}]},{"id":7,"subContentId":"1e3d1cb3-468c-4317-84b8-5fc712fc88c6","title":"What is the purpose of the [Orders] section in Creatio?","question":"What is the purpose of the [Orders] section in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"To registering the account receivables","correct":false},{"id":2,"text":"To integrate with QuickBooks","correct":false},{"id":3,"text":"To store customer payment details","correct":false},{"id":4,"text":"To manage and fulfill customer orders","correct":true}]},{"id":8,"subContentId":"9903f9ba-f3dd-4aa5-9702-632be7a96f98","title":"How do you provide a discount for an order in Creatio?","question":"How do you provide a discount for an order in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Product discounts are not available in Creatio","correct":false},{"id":2,"text":"To provide a discount, you need to change the price of the product in Product section","correct":false},{"id":3,"text":"Manually change the order total","correct":false},{"id":4,"text":"Discounts can be provided per product on the order form page","correct":true}]},{"id":9,"subContentId":"3edb1c01-d866-461c-9dd5-1253df5daaf4","title":"What is the purpose of the [Invoices] section?","question":"What is the purpose of the [Invoices] section?","multiSelect":false,"answers":[{"id":1,"text":"To create and edit the invoice templates","correct":false},{"id":2,"text":"To manage company invoices","correct":true},{"id":3,"text":"To store information on legal documents connected to orders","correct":false},{"id":4,"text":"Integration with QuickBooks","correct":false},{"id":5,"text":"To register financial details of contacts and accounts","correct":false}]},{"id":10,"subContentId":"1132b5b3-d56d-4937-8c44-9f2be0b13e4e","title":"What is the purpose of the [Products] section?","question":"What is the purpose of the [Products] section?","multiSelect":false,"answers":[{"id":1,"text":"Registering new products and linking them to corresponding contracts","correct":false},{"id":2,"text":"Managing your products and services","correct":true},{"id":3,"text":"Automation of selecting products for orders and invoices","correct":false},{"id":4,"text":"Creating a print-ready product catalog","correct":false},{"id":5,"text":"Monitoring the product prices","correct":false}]},{"id":11,"subContentId":"36a6294b-c75c-4599-850f-6cfbc4adf6e5","title":"How does Creatio determine a price for a specific product?","question":"How does Creatio determine a price for a specific product?","multiSelect":false,"answers":[{"id":1,"text":"The price is determined by the base price list, if it is selected in the settings. If the price list is not filled in the settings, then the price value from the personal price list is used","correct":false},{"id":2,"text":"The price is determined in the personal price list. If it is not filled in, then the price list specified as the base one is used. If the base price list is also not specified, then the price from product page is used","correct":true},{"id":3,"text":"The price listed on the product page is used. If the price is not specified, then the personal price list is used","correct":false},{"id":4,"text":"Creatio always uses the price from the product catalog. If the price in the product catalog is not set, then the base price list is used","correct":false}]},{"id":12,"subContentId":"0bb66169-c1b0-4e11-a543-00ea3eb19e44","title":"Which app is best used for managing document flow in Creatio?","question":"Which app is best used for managing document flow in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Lead and Opportunity Management application","correct":false},{"id":2,"text":"Order and Contract Management application","correct":true},{"id":3,"text":"Productivity application","correct":false}]},{"id":13,"subContentId":"60223403-f396-4ec8-8d8b-d5a31ac7dc8f","title":"What is the purpose of the [Documents] section in Creatio?","question":"What is the purpose of the [Documents] section in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Managing marketing templates and promotional materials","correct":false},{"id":2,"text":"Managing product specifications, price lists, and product catalogs","correct":false},{"id":3,"text":"Managing company\u2019s internal and external documents (e.g., regulations, meeting minutes, etc.)","correct":true},{"id":4,"text":"Managing stakeholders\u2019 documents and contracts","correct":false},{"id":5,"text":"Managing employee documentation","correct":false}]},{"id":14,"subContentId":"6acb7723-1f08-42d3-8e3a-6abd225ec1fe","title":"Select all statements that are true.","question":"Select all statements that are true.","multiSelect":true,"answers":[{"id":1,"text":"Order and Contract Management app is a solution that helps manage orders, issue invoices and handle document flow","correct":true},{"id":2,"text":"Lead and Opportunity Management app is used for managing the whole sales funnel, from incoming lead to closing the deal","correct":true},{"id":3,"text":"Field Sales app is a product for sales management in the agricultural sector","correct":false}]},{"id":15,"subContentId":"5ed77f94-46cc-4be6-960a-14f64eea19bb","title":"What is the purpose of the [Forecasts] section?","question":"What is the purpose of the [Forecasts] section?","multiSelect":false,"answers":[{"id":1,"text":"Forecasting the budgets of new opportunities based on historical data","correct":false},{"id":2,"text":"Calculating the expected ROI by accounts","correct":false},{"id":3,"text":"Planning the financial, quantitative and temporal metrics by different entities","correct":true},{"id":4,"text":"Determining the best marketing strategies for working with new leads","correct":false},{"id":5,"text":"Predicting the response data for the [Emails] and [Events] sections","correct":false}]},{"id":16,"subContentId":"a07c28ae-f5be-489f-9a32-7d15ca1c13d9","title":"How do you populate the forecasted and actual data in a forecast? Select all that apply.","question":"How do you populate the forecasted and actual data in a forecast? Select all that apply.","multiSelect":true,"answers":[{"id":1,"text":"Run a custom business process","correct":false},{"id":2,"text":"Enter manually","correct":true},{"id":3,"text":"Calculate based on a formula","correct":true},{"id":4,"text":"Pull the data from Creatio","correct":true}]},{"id":17,"subContentId":"7999a1ac-b680-486f-bf4b-b9f2e8b59d2f","title":"What is \u201cField Sales\u201d?","question":"What is \u201cField Sales\u201d?","multiSelect":false,"answers":[{"id":1,"text":"A Creatio Marketplace application for automating sales in the agricultural sector","correct":false},{"id":2,"text":"A Creatio Marketplace application for managing field sales","correct":true},{"id":3,"text":"A Creatio section designed for planning field sales","correct":false},{"id":4,"text":"A Creatio product for registering and monitoring the whole cycle of field sales","correct":false},{"id":5,"text":"A Creatio product combining Sales Creatio and Service Creatio","correct":false}]},{"id":18,"subContentId":"c694930e-9900-4f15-b7bd-8c663971c902","title":"Which features are available in the Field Sales application? Select all that apply.","question":"Which features are available in the Field Sales application? Select all that apply.","multiSelect":true,"answers":[{"id":1,"text":"Scheduling the sales reps\u2019 visits to sales outlets","correct":true},{"id":2,"text":"Maintaining the visit agenda and guidelines","correct":true},{"id":3,"text":"Building routes on the map","correct":true},{"id":4,"text":"Visit \u201cto-do\u201d lists","correct":true},{"id":5,"text":"Planning field sales by different metrics","correct":false}]},{"id":19,"subContentId":"a4c2a870-c40f-4f26-8932-2ba30306b576","title":"What are similar leads in the Leads section?","question":"What are similar leads in the Leads section?","multiSelect":false,"answers":[{"id":1,"text":"Leads that are considered duplicates are displayed in Similar leads list. These duplicates cannot be merged","correct":true},{"id":2,"text":"Similar leads are leads generated by the same owner in Creatio","correct":false},{"id":3,"text":"Similar leads are leads that were received from different lead channels for the same customer need","correct":false},{"id":4,"text":"Similar leads are leads created on the same day that are considered duplicates","correct":false}]},{"id":20,"subContentId":"c35f2a19-104d-49b0-b717-45438662929a","title":"What is a product catalog in Sales Creatio?","question":"What is a product catalog in Sales Creatio?","multiSelect":false,"answers":[{"id":1,"text":"The product catalog is a separate folder tree component that is used to selection of products in Order section","correct":true},{"id":2,"text":"The product catalog is a printable generated based on products and services the company offers","correct":false},{"id":3,"text":"The product catalog is preselect list of products that can be offered to the specific customer","correct":false}]}]},{"ok":true,"pageTitle":"Sales Creatio Quiz","activityTitle":"No-code customization","href":"https://academy.creatio.com/group/23/module/58/restart-activity/67","itemId":"67","type":"restart-activity","contentId":31,"h5pLibrary":"H5P.QuestionSet 1.20","originalPoolSize":4,"totalQuestions":28,"randomQuestions":true,"progressType":"textual","questions":[{"id":1,"subContentId":"9eb41c9e-e0bd-4080-a820-a655cd4040e7","title":"How many workplaces can display the same section?","question":"How many workplaces can display the same section?","multiSelect":false,"answers":[{"id":1,"text":"Only one","correct":false},{"id":2,"text":"No more than 5","correct":false},{"id":3,"text":"Unlimited","correct":true},{"id":4,"text":"Three workplaces, including the portal one","correct":false},{"id":5,"text":"Depending on the corresponding system setting","correct":false}]},{"id":2,"subContentId":"7fb7f5bf-3759-4a9d-9b75-33e5e16ca2ff","title":"What is a \u201cbusiness rule\u201d from the Creatio standpoint?","question":"What is a \u201cbusiness rule\u201d from the Creatio standpoint?","multiSelect":false,"answers":[{"id":1,"text":"A company regulation describing specific business behavior","correct":false},{"id":2,"text":"A model of company business structure","correct":false},{"id":3,"text":"A tool that enables configuring business logic of record pages","correct":true},{"id":4,"text":"A developer tool used for configuration purposes in the backend","correct":false},{"id":5,"text":"A machine learning model designed to predict values in the page fields","correct":false}]},{"id":3,"subContentId":"c0642af1-49fc-4ff4-98d1-1bfdbf573e20","title":"What needs to be done before you start designing the MS word report template layout?","question":"What needs to be done before you start designing the MS word report template layout?","multiSelect":false,"answers":[{"id":1,"text":"Create a report record in the report setup and set up the report data and report tables","correct":true},{"id":2,"text":"Add the needed data manually in MS Word on a local PC","correct":false},{"id":3,"text":"Create a new page in the application and set up the columns","correct":false},{"id":4,"text":"Create a business process to generate the report","correct":false}]},{"id":4,"subContentId":"5b7294ff-1a7e-473b-8769-fb21204b4546","title":"What are the Creatio MS Word reports based on?","question":"What are the Creatio MS Word reports based on?","multiSelect":false,"answers":[{"id":1,"text":"Section records","correct":true},{"id":2,"text":"The [Dashboards] section data","correct":false},{"id":3,"text":"The lookup field values","correct":false},{"id":4,"text":"The numeric field values","correct":false},{"id":5,"text":"Data imported from Excel tables","correct":false}]},{"id":5,"subContentId":"83312e70-dfce-4a57-8e02-5010ac019c5b","title":"How can a user select a report available for printing?","question":"How can a user select a report available for printing?","multiSelect":false,"answers":[{"id":1,"text":"In the [Report setup] section","correct":false},{"id":2,"text":"In the section list page or on the record page in sections for which reports are configured","correct":true},{"id":3,"text":"In the [Documents] section","correct":false},{"id":4,"text":"In the [Printables] lookup","correct":false},{"id":5,"text":"In the [Printables] section","correct":false}]},{"id":6,"subContentId":"d41fa6b2-ad7a-4716-be8b-ddd96f1d54a5","title":"How can a user select a report available for printing? (2)","question":"How can a user select a report available for printing?","multiSelect":false,"answers":[{"id":1,"text":"In the [Report setup] section","correct":false},{"id":2,"text":"In the section list page or on the record page in sections, for which reports are configured","correct":true},{"id":3,"text":"In the Application Hub","correct":false},{"id":4,"text":"In the [Printables] lookup","correct":false},{"id":5,"text":"In the [Message templates] section","correct":false}]},{"id":7,"subContentId":"a41aa593-ef4b-41c9-8c06-dbde2f7eab8f","title":"Which data is displayed in the MS Word report tables?","question":"Which data is displayed in the MS Word report tables?","multiSelect":false,"answers":[{"id":1,"text":"Records connected to the primary report object","correct":true},{"id":2,"text":"Records of the primary report object","correct":false},{"id":3,"text":"Records containing numeric data only","correct":false},{"id":4,"text":"Object records that were added using basic macros","correct":false},{"id":5,"text":"Object records with reverse connection","correct":false}]},{"id":8,"subContentId":"895a5aec-4171-46a0-b3ca-2d1db5476af5","title":"What is the purpose of the [Web services] section in Creatio?","question":"What is the purpose of the [Web services] section in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Adding new low-code integrations with web services and web service setup","correct":true},{"id":2,"text":"Calling web services and processing of the received responses","correct":false},{"id":3,"text":"Managing installed applications","correct":false},{"id":4,"text":"Setting up business processes that contain the \u201cCall web service\u201d element","correct":false},{"id":5,"text":"Web service authentication","correct":false}]},{"id":9,"subContentId":"3bf2fed1-dced-4401-b1a7-f7b7fc922cc0","title":"How do you call a web service from Creatio?","question":"How do you call a web service from Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Set up and run a business process with the [Call web service] element","correct":true},{"id":2,"text":"Run the [Call web service] action from the page of the needed record in the [Web services] section","correct":false},{"id":3,"text":"Use developer tools","correct":false},{"id":4,"text":"Web services are called automatically after they are set up in the [Web services] section","correct":false}]},{"id":10,"subContentId":"d31cd5eb-d91b-4abb-b02c-24f471caf9da","title":"What will happen during executing this business process?","question":"What will happen during executing this business process in the picture? Click on the image to enlarge it for a better view.","multiSelect":false,"answers":[{"id":1,"text":"A pre-configured page will open whose fields will be populated with the currency exchange rates passed as a web service response","correct":true},{"id":2,"text":"Creatio will process the web service response and update the data in the [Currencies] lookup","correct":false},{"id":3,"text":"Creatio will call a web service to receive the current exchange rate and start processing the web service response","correct":false},{"id":4,"text":"The process will stop since the calling of a web service resulted in an error","correct":false}]},{"id":11,"subContentId":"a702b3c0-67ab-4936-992d-c8d19cdc5777","title":"What is the purpose of the [ML models] section in Creatio?","question":"What is the purpose of the [ML models] section in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Importing the data needed to train the machine learning models","correct":false},{"id":2,"text":"Setting up business processes that contain the \u201cPredict data\u201d element","correct":false},{"id":3,"text":"Creating and training the models for predictive analysis of data in Creatio","correct":true},{"id":4,"text":"Creating a set of commands that describe a problem to be solved by predictive analysis","correct":false},{"id":5,"text":"Creating a list of predictions generated during training the machine learning model","correct":false}]},{"id":12,"subContentId":"6c6e502c-2b87-447f-98db-b99adc53ebcb","title":"What is \u201cPredictive analysis\u201d in the Creatio terminology?","question":"What is \u201cPredictive analysis\u201d in the Creatio terminology?","multiSelect":false,"answers":[{"id":1,"text":"A tool that enables predicting future events based on large volumes of historical data and current facts","correct":true},{"id":2,"text":"A set of patterns obtained by a machine learning model as a result of processing historical data","correct":false},{"id":3,"text":"Processing of historical data by a machine learning model","correct":false},{"id":4,"text":"A branch of the AI designed to parse the patterns in large volumes of data","correct":false},{"id":5,"text":"Selection of Creatio records for training the machine learning models","correct":false}]},{"id":13,"subContentId":"d6393ee9-13ef-4b33-b47d-d03966a09c46","title":"What is the principle of training machine learning models in Creatio?","question":"What is the principle of training machine learning models in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Creatio analyzes the available historical data and identifies patterns and dependencies that are stored in the cloud and may further be used for predictions","correct":true},{"id":2,"text":"Creatio collects the data needed to resolve a business task and generates a request for the missing information","correct":false},{"id":3,"text":"Creatio determines the factors affecting the prediction and creates examples for training models based on the factor impact","correct":false},{"id":4,"text":"Creatio generates a business process with the \u2018Predict data\u201d element; it determines the patterns for making a prediction","correct":false}]},{"id":14,"subContentId":"1af69e60-41ea-45c4-94d2-3b9408a543c0","title":"Which Creatio users have access to the mobile app functionality?","question":"Which Creatio users have access to the mobile app functionality?","multiSelect":false,"answers":[{"id":1,"text":"External B2B portal users only","correct":false},{"id":2,"text":"Portal administrators only","correct":false},{"id":3,"text":"System administrators and System users only","correct":false},{"id":4,"text":"To all Creatio users","correct":true},{"id":5,"text":"Main application users with the system administrator permissions only","correct":false}]},{"id":15,"subContentId":"a604bad5-1be3-47c5-a27a-764e6c75c4bf","title":"What data is cached when synchronizing the mobile and the main applications?","question":"What data is cached when synchronizing the mobile and the main applications?","multiSelect":false,"answers":[{"id":1,"text":"The database structure only","correct":false},{"id":2,"text":"The data in the database only","correct":false},{"id":3,"text":"The database structure and the data","correct":true}]},{"id":16,"subContentId":"c749128d-dc8a-4dc9-ac26-12c1f862e4c2","title":"Is it possible to configure access to workplaces in Creatio?","question":"Is it possible to configure access to workplaces in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Yes, in Workplace setup","correct":true},{"id":2,"text":"Yes, in Application Hub","correct":false},{"id":3,"text":"No, all workplaces are available to all users","correct":false},{"id":4,"text":"Yes, in Object designer","correct":false}]},{"id":17,"subContentId":"0ccf68db-2bd8-4f33-8e56-097bbb885ce1","title":"Is it possible to set up a list of sections for the external users in Creatio?","question":"Is it possible to set up a list of sections for the external users in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Yes, use the [Portal setup] block of the System Designer","correct":false},{"id":2,"text":"Yes, use the \u201cPortal\u201d workplace in the Workplace setup","correct":true},{"id":3,"text":"Yes, use the \"Limited internal\" workplace in the Workplace setup","correct":false},{"id":4,"text":"No, the available sections are based solely on the user\u2019s license","correct":false}]},{"id":18,"subContentId":"6c80522b-68b2-43d3-ad7f-27f7341fac60","title":"What is the purpose of the [Translations] section in Creatio?","question":"What is the purpose of the [Translations] section in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Localizing Creatio elements, e.g., sections, lookups, into languages available in the system","correct":true},{"id":2,"text":"Managing the translations of company documents","correct":false},{"id":3,"text":"Localizing the resources of the Creatio core","correct":false},{"id":4,"text":"Managing the translations of marketing email templates and reports in Creatio","correct":false}]},{"id":19,"subContentId":"4e2ced3c-8dad-46ab-9b01-858e42e9e251","title":"How can one create a new application in Freedom UI?","question":"How can one create a new application in Freedom UI?","multiSelect":false,"answers":[{"id":1,"text":"Use the Application Hub to create a new application. Application can be created using one of the available templates","correct":true},{"id":2,"text":"Contact Creatio support to create a new application","correct":false},{"id":3,"text":"You can create a new application by creating a new package in the configuration","correct":false},{"id":4,"text":"An application can be created using a business process","correct":false}]},{"id":20,"subContentId":"fe439e2d-6bb8-4549-a2d4-6526664e64a1","title":"What elements can an application consist of in Freedom UI? Select all that apply.","question":"What elements can an application consist of in Freedom UI? Select all that apply.","multiSelect":true,"answers":[{"id":1,"text":"Pages","correct":true},{"id":2,"text":"Navigation and sections","correct":true},{"id":3,"text":"Business processes","correct":true},{"id":4,"text":"Integrations","correct":true},{"id":5,"text":"Organizational structure","correct":false},{"id":6,"text":"Deduplication methods","correct":false}]},{"id":21,"subContentId":"76c5626e-6a5f-40f5-8c02-62822162f9ee","title":"What is the difference between application and a package?","question":"What is the difference between application and a package?","multiSelect":false,"answers":[{"id":1,"text":"Application is a function block. It can include multiple packages and has its own parameters","correct":true},{"id":2,"text":"Application is the next evolutionary stage of a package. It enriches the package with additional metadata (like color, icon, etc.)","correct":false},{"id":3,"text":"Application is a new name for a package according to the undated terminology of Creatio 8.0 Atlas","correct":false},{"id":4,"text":"Application is an essential part of a package describing additional properties of the package\u2019s","correct":false}]},{"id":22,"subContentId":"92f610a4-8fd7-446e-887f-71353c71b23b","title":"What is the difference between application and a package? (2)","question":"What is the difference between application and a package?","multiSelect":false,"answers":[{"id":1,"text":"An application solves a business problem and a package is a combination of confuguration elements","correct":true},{"id":2,"text":"There is no difference. Application and package are synonyms","correct":false},{"id":3,"text":"An application is an UI element that is available in the Navigation Panel and a package is structural component that is connected to an object","correct":false},{"id":4,"text":"An application is a more modern term for a package","correct":false}]},{"id":23,"subContentId":"5a4bbf78-5dd0-43a3-a1ba-bbde878b845a","title":"What template should you choose to create an empty application?","question":"What template should you choose to create an empty application that contains only a package with no configuration element schemas?","multiSelect":false,"answers":[{"id":1,"text":"Records & Business processes","correct":false},{"id":2,"text":"Custom","correct":true},{"id":3,"text":"Install from file","correct":false},{"id":4,"text":"Marketplace powered","correct":false},{"id":5,"text":"Dashboards","correct":false}]},{"id":24,"subContentId":"36deb5f6-5cf5-4c86-a8ca-232bb9ced2b5","title":"What is displayed in the Navigation panel?","question":"What is displayed in the Navigation panel?","multiSelect":false,"answers":[{"id":1,"text":"Workplaces and Sections","correct":true},{"id":2,"text":"Applications","correct":false},{"id":3,"text":"Packages","correct":false},{"id":4,"text":"Objects and data models","correct":false},{"id":5,"text":"Pages","correct":false}]},{"id":25,"subContentId":"c3961b09-6ada-426b-8c35-7f887700678f","title":"How do you assign Desktop permissions in Creatio?","question":"How do you assign Desktop permissions in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"You can assign user permissions in the Desktop designer","correct":false},{"id":2,"text":"You can assign separate user permissions for each element on the Desktop","correct":false},{"id":3,"text":"You cannot manage Desktop permissions, they are configured by default","correct":false},{"id":4,"text":"The Desktop is visible to all users","correct":false},{"id":5,"text":"You can assign permissions via the Object permissions","correct":true}]},{"id":26,"subContentId":"a031e00c-62f1-4267-a439-0d160e9db654","title":"What is the purpose of Application Hub in Creatio?","question":"What is the purpose of Application Hub in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Managing Creatio apps of any complexity in the No-Code Designer","correct":true},{"id":2,"text":"Managing Customer database","correct":false},{"id":3,"text":"Configuring access permissions for different users","correct":false},{"id":4,"text":"Switching from Classic UI to Freedom UI","correct":false},{"id":5,"text":"Setting up Workplaces for different users","correct":false}]},{"id":27,"subContentId":"dd378b57-16a9-4362-855f-ea2285ee3aa7","title":"What is the purpose of Inputs elements in the UI designer?","question":"What is the purpose of Inputs elements in the UI designer?","multiSelect":false,"answers":[{"id":1,"text":"Displaying data","correct":true},{"id":2,"text":"Modifying the structure of the data model","correct":false},{"id":3,"text":"Enabling users to take a wide variety of actions, from opening record pages to setting up access permissions","correct":false},{"id":4,"text":"Grouping Freedom UI elements by multiple criteria","correct":false}]},{"id":28,"subContentId":"231e5752-4a29-4867-98e8-2da3d3d38ce7","title":"What is an \u201cObject\u201d from Creatio standpoint?","question":"What is an \u201cObject\u201d from Creatio standpoint?","multiSelect":false,"answers":[{"id":1,"text":"Any element added to a record page of a section","correct":false},{"id":2,"text":"An additional page configured for a section","correct":false},{"id":3,"text":"A data entity that represents a certain business category. Used to generate sections, objects, and lookups.","correct":true},{"id":4,"text":"An UI element for viewing and updating the contents of columns","correct":false},{"id":5,"text":"A set of sections displayed on the Creatio side panel for specific user groups","correct":false}]}]},{"ok":true,"pageTitle":"Sales Creatio Quiz","activityTitle":"BPM tools","href":"https://academy.creatio.com/group/23/module/58/restart-activity/62","itemId":"62","type":"restart-activity","contentId":26,"h5pLibrary":"H5P.QuestionSet 1.20","originalPoolSize":3,"totalQuestions":12,"randomQuestions":true,"progressType":"textual","questions":[{"id":1,"subContentId":"abf33f57-4a8c-48ed-839b-212f36e0eb96","title":"What is a business process?","question":"What is a business process? Select the option that describes it best.","multiSelect":false,"answers":[{"id":1,"text":"Arbitrary set of actions performed by user at his own discretion for solving the needed tasks","correct":false},{"id":2,"text":"A certain sequence of steps enabling to achieve specific result","correct":true},{"id":3,"text":"An action that needs to be performed by a specific employee at a specific time","correct":false},{"id":4,"text":"Example of successful implementation of a task","correct":false}]},{"id":2,"subContentId":"cfaa0565-fb6a-46b6-aefe-b7564ab1f63d","title":"What is a business process? (2)","question":"What is a business process? Select the option that describes it best.","multiSelect":false,"answers":[{"id":1,"text":"A business process is any set of actions performed by user at his own discretion to solve a task","correct":false},{"id":2,"text":"A business process is a certain sequence of steps that allows to achieve specific result","correct":true},{"id":3,"text":"A business process is an action that needs to be performed by a specific employee at a specific time","correct":false},{"id":4,"text":"A business process is a set of task performed by business users","correct":false}]},{"id":3,"subContentId":"87426342-c29b-4365-a92a-58ac61794e55","title":"What is the purpose of process parameters in Creatio?","question":"What is the purpose of process parameters in Creatio? Select all that apply.","multiSelect":true,"answers":[{"id":1,"text":"Exchange data between process elements","correct":true},{"id":2,"text":"Open the edit page","correct":false},{"id":3,"text":"Determining the specifics of process element execution, e.g., if a record is created as part of a business process, parameters can determine which fields will be populated and how","correct":true},{"id":4,"text":"Saving intermediate information during a business process flow","correct":true},{"id":5,"text":"Performing a pre-configured custom action in a business process","correct":false}]},{"id":4,"subContentId":"83bf9d88-bf05-4dc7-aec3-1b31bba14395","title":"What do you use intermediate events for?","question":"What do you use intermediate events for?","multiSelect":false,"answers":[{"id":1,"text":"To launch a process","correct":false},{"id":2,"text":"To wait for specific trigger events or interaction between multiple business processes","correct":true},{"id":3,"text":"To terminate a process","correct":false},{"id":4,"text":"To branch out the process","correct":false}]},{"id":5,"subContentId":"6de8d27a-fa11-4897-ace4-b5845916b632","title":"What is the purpose of gateways in a business process diagram?","question":"What is the purpose of gateways in a business process diagram?","multiSelect":false,"answers":[{"id":1,"text":"Managing the process flows: converging and diverging the sequence flows depending on the alternative paths","correct":true},{"id":2,"text":"Catching process events and signals","correct":false},{"id":3,"text":"Stopping the process flow execution for a particular period","correct":false},{"id":4,"text":"Terminating the process flow","correct":false},{"id":5,"text":"Changing the process participants at a certain stage of the process execution","correct":false}]},{"id":6,"subContentId":"a2f47c69-2283-4d8f-be7e-cca1d44ef63f","title":"Where do you view the process execution history in Creatio?","question":"Where do you view the process execution history in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"The [Process library] section","correct":false},{"id":2,"text":"The [Activities] section","correct":false},{"id":3,"text":"The [Process log] section","correct":true},{"id":4,"text":"The [Business process tasks] tab of the communication panel","correct":false},{"id":5,"text":"The [Change log] section","correct":false}]},{"id":7,"subContentId":"7616af56-dfd2-4605-adb4-cab686a4fc23","title":"What is business process tracing used for?","question":"What is business process tracing used for?","multiSelect":false,"answers":[{"id":1,"text":"To fix errors during the execution of the process","correct":false},{"id":2,"text":"To track process element parameters in each process element","correct":true},{"id":3,"text":"To track process versions","correct":false},{"id":4,"text":"To keep track of who is responsible for each process instance","correct":false},{"id":5,"text":"To track process execution time","correct":false}]},{"id":8,"subContentId":"77471574-0621-4775-97c8-58232b1e46f2","title":"What is the purpose of the Case Designer in Creatio?","question":"What is the purpose of the Case Designer in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Automating, building and customizing the stages of non-linear business processes","correct":true},{"id":2,"text":"Designing, constructing and customizing the steps of linear business processes with a clear algorithm","correct":false},{"id":3,"text":"Debugging business processes and cases","correct":false},{"id":4,"text":"Tracing the execution of business process elements that run in the background","correct":false}]},{"id":9,"subContentId":"b36ff90e-ff8b-4b17-9dc6-2e838fa7a39e","title":"What happens in Creatio if you delete a stage from the progress bar?","question":"What happens in Creatio if you delete a stage from the progress bar?","multiSelect":false,"answers":[{"id":1,"text":"The stage will be deleted from the list of the corresponding lookup values","correct":false},{"id":2,"text":"The stage steps will remain and will run in the background","correct":false},{"id":3,"text":"The case status will automatically change to \u201cCanceled\u201d","correct":false},{"id":4,"text":"The case steps will be deleted but the stage value will remain in the corresponding lookup","correct":true},{"id":5,"text":"The stage will only be deleted for the current case session and will be restored at the next session","correct":false}]},{"id":10,"subContentId":"04a78b7d-807e-4faf-8a3a-90ff4ef6093f","title":"How do you launch a dynamic case in Creatio?","question":"How do you launch a dynamic case in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"In the section list, click the \u201cRun case for section\u201d action","correct":false},{"id":2,"text":"Run the corresponding business process in the process library","correct":false},{"id":3,"text":"Manually run the case by clicking its first stage on the record page","correct":false},{"id":4,"text":"The case launches automatically when a new record that matches the case conditions is created","correct":true},{"id":5,"text":"The case starts automatically once the case section record is opened","correct":false}]},{"id":11,"subContentId":"72269138-cbca-4772-9bbd-2a2986ec9b2b","title":"How do you launch a dynamic case in Creatio? (2)","question":"How do you launch a dynamic case in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Create a button \u201cLaunch case\u201d on a section list page","correct":false},{"id":2,"text":"A user needs to run a corresponding business process from the run process button","correct":false},{"id":3,"text":"A dynamic case is launched for any new record in the system","correct":false},{"id":4,"text":"The case launches automatically when a new record that matches the case conditions is created","correct":true},{"id":5,"text":"The case starts automatically once the record page is opened","correct":false}]},{"id":12,"subContentId":"20a92f05-4a8d-4de3-b8c9-99eb153c1105","title":"What is the difference between user actions and system actions?","question":"What is the difference between user actions and system actions?","multiSelect":false,"answers":[{"id":1,"text":"User actions are used when user will be interacting with the system (e.g., completing tasks, filling out forms etc.) and system actions run in background and executed automatically","correct":true},{"id":2,"text":"User actions apply only to active users, while system actions apply throughout the system","correct":false},{"id":3,"text":"System actions can only be completed by Supervisor, while user actions are accessible to all users of the system","correct":false},{"id":4,"text":"User actions can be performed by any user, while system actions require validation from system administrators","correct":false}]}]},{"ok":true,"pageTitle":"Sales Creatio Quiz","activityTitle":"Administration","href":"https://academy.creatio.com/group/23/module/58/restart-activity/61","itemId":"61","type":"restart-activity","contentId":25,"h5pLibrary":"H5P.QuestionSet 1.20","originalPoolSize":4,"totalQuestions":25,"randomQuestions":true,"progressType":"textual","questions":[{"id":1,"subContentId":"3c73ea33-0b52-4b31-a1a3-cf0e48758360","title":"Can you add new sections to the portal?","question":"Can you add new sections to the portal?","multiSelect":false,"answers":[{"id":1,"text":"Yes, if you use External B2B or External B2C licenses","correct":true},{"id":2,"text":"Yes, if you use Self-service Portal licenses","correct":false},{"id":3,"text":"No","correct":false},{"id":4,"text":"Yes, if you use any type of portal licenses","correct":false}]},{"id":2,"subContentId":"2e439153-5a37-4530-ab2a-840b8be3b350","title":"Can you manage permissions for portal users?","question":"Can you manage permissions for portal users?","multiSelect":false,"answers":[{"id":1,"text":"Yes","correct":true},{"id":2,"text":"No","correct":false},{"id":3,"text":"Yes, provided you have additional licenses that enable managing access permissions","correct":false},{"id":4,"text":"Yes, but only for the \u201cKnowledge base\u201d and \u201cCases\u201d sections","correct":false}]},{"id":3,"subContentId":"d798b734-3353-4089-97f7-1c13ee050313","title":"What is a \u201cportal\u201d from the Creatio standpoint?","question":"What is a \u201cportal\u201d from the Creatio standpoint?","multiSelect":false,"answers":[{"id":1,"text":"A component that provides a way to manage opportunities for Creatio partners","correct":false},{"id":2,"text":"A component that provides secure and managed limited access to Creatio data and functionality to internal and external users (e.g., customers, partners, contractors, stakeholders, etc.)","correct":true},{"id":3,"text":"A separately designed Creatio messenger used by the support team","correct":false},{"id":4,"text":"A communication channel for the support lines of different levels","correct":false},{"id":5,"text":"A community where Creatio developers exchange their expertise","correct":false}]},{"id":4,"subContentId":"8daaca38-85f1-426f-99f2-981f9525c31d","title":"What user licenses allow to access Creatio portal?","question":"What user licenses allow to access Creatio portal? Select all that apply.","multiSelect":true,"answers":[{"id":1,"text":"Self-service portal","correct":true},{"id":2,"text":"External B2C","correct":true},{"id":3,"text":"External B2B","correct":true},{"id":4,"text":"Supplier portal","correct":false},{"id":5,"text":"Employee portal","correct":false}]},{"id":5,"subContentId":"9e704859-09c1-42c6-b5ab-cd8ff6d196b4","title":"How do you manage access permissions to data and functionality in Creatio?","question":"How do you manage access permissions to data and functionality in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"You can grant permissions to individual users only","correct":false},{"id":2,"text":"You can grant permissions to user groups (roles) and departments","correct":false},{"id":3,"text":"You can grant permissions to individual users as well as to user groups (roles)","correct":true},{"id":4,"text":"You can grant permissions for individual contacts","correct":false},{"id":5,"text":"You can grant permissions to separate roles only","correct":false}]},{"id":6,"subContentId":"76fc4ccd-009c-4968-903f-5fe1b9b944df","title":"What is the principle of permission inheritance between organizational roles in Creatio?","question":"What is the principle of permission inheritance between organizational roles in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Parent roles inherit all access permissions that have been set up for their subordinate roles","correct":false},{"id":2,"text":"Subordinate roles inherit all access permissions that have been set up for their parent role","correct":true},{"id":3,"text":"Parent roles do not pass their permissions over to subordinate roles","correct":false},{"id":4,"text":"Parent and subordinate roles have no connection in terms of permissions whatsoever","correct":false},{"id":5,"text":"Parent roles inherit permissions from the managers of their subordinate roles","correct":false}]},{"id":7,"subContentId":"9c9cb876-c8a1-45a0-b4e7-e4cb89a17d26","title":"What primary types of access permissions do you grant in Creatio?","question":"What primary types of access permissions do you grant in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Access to objects and system operations","correct":true},{"id":2,"text":"Developer access and user access","correct":false},{"id":3,"text":"Portal access and application access","correct":false},{"id":4,"text":"Customization access and configuration access","correct":false},{"id":5,"text":"Permanent access and temporary access","correct":false}]},{"id":8,"subContentId":"4d732fce-0b97-4eeb-b3cf-8e75d086a5a3","title":"What are the available levels of object permissions in Creatio?","question":"What are the available levels of object permissions in Creatio? Select all that apply.","multiSelect":true,"answers":[{"id":1,"text":"Operation permissions","correct":true},{"id":2,"text":"Detail permissions","correct":false},{"id":3,"text":"Record permissions","correct":true},{"id":4,"text":"Column permissions","correct":true},{"id":5,"text":"Tab permissions","correct":false}]},{"id":9,"subContentId":"9e027c7a-f564-4ea7-985a-68773a1aa185","title":"What is a server license?","question":"What is a \"server license\"?","multiSelect":false,"answers":[{"id":1,"text":"A license that enables access to specific functionality","correct":true},{"id":2,"text":"A license that enables product access to certain users only","correct":false},{"id":3,"text":"A license that enables administrator access","correct":false},{"id":4,"text":"This type of license doesn't exist","correct":false}]},{"id":10,"subContentId":"8d04b77e-07a1-4782-8adf-6b00b3f6e041","title":"What is a personal license?","question":"What is a \"personal license\"?","multiSelect":false,"answers":[{"id":1,"text":"A license that enables access to the product for certain users only","correct":true},{"id":2,"text":"A license that enables access to the product for certain user roles only","correct":false},{"id":3,"text":"A license that enables access to specific functionality","correct":false}]},{"id":11,"subContentId":"114ddcbc-c7c5-4a36-b5f5-93470d465035","title":"How do you license a separate user record in Creatio?","question":"How do you license a separate user record in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Select the \u201cActive\u201d checkbox on the record page of the needed user to run the automatic license distribution","correct":false},{"id":2,"text":"Run the [Distribute licenses] action on the record page of the needed user","correct":false},{"id":3,"text":"Select the products to license on the [Licenses] tab of the user record page","correct":true},{"id":4,"text":"In the [System users] section, you can only distribute multiple licenses to user groups","correct":false},{"id":5,"text":"Run the [Distribute licenses] in the [System users] section list and select the needed user in the opened window","correct":false}]},{"id":12,"subContentId":"60088458-43eb-44e0-b26e-890e3a92c124","title":"What is the purpose of the [Change log] section in Creatio?","question":"What is the purpose of the [Change log] section in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Storage of backups in the system and possibility to restore the old application versions","correct":false},{"id":2,"text":"Storage of information about adding, editing, and deleting data in Creatio","correct":true},{"id":3,"text":"Editing system settings","correct":false},{"id":4,"text":"Registering updates and fixed errors in different release versions","correct":false},{"id":5,"text":"Registering information about changing the user role structure and access permissions settings","correct":false}]},{"id":13,"subContentId":"71542cdb-65e0-40da-a228-1d986427f27c","title":"What is the purpose of the [Audit log] section in Creatio?","question":"What is the purpose of the [Audit log] section in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Storage of information about the interaction of system users with external applications","correct":false},{"id":2,"text":"Automatic registration of changes in the role structure, access permissions, system settings, and user authorization","correct":true},{"id":3,"text":"Storage of information about adding, editing, and deleting data in Creatio","correct":false},{"id":4,"text":"Storage of information about system administrators\u2019 actions","correct":false},{"id":5,"text":"Registering financial metrics, account reports, and tax inspection results","correct":false}]},{"id":14,"subContentId":"255ac451-ff6b-4a61-93f6-ecdbe5ccad8e","title":"What is the purpose of the [Lookups] section?","question":"What is the purpose of the [Lookups] section?","multiSelect":false,"answers":[{"id":1,"text":"Creating email templates for marketing purposes","correct":false},{"id":2,"text":"Storing information about the provided services and their specifications","correct":false},{"id":3,"text":"Managing section details","correct":false},{"id":4,"text":"Managing system objects that store pre-set values for the specific type of fields in Creatio","correct":true},{"id":5,"text":"Setting up reports based on Creatio data","correct":false}]},{"id":15,"subContentId":"0f02c9f9-b969-4bf5-b945-b3f486f6c026","title":"Which of the below does not synchronize with Creatio (MS 365/Exchange)?","question":"Which of the below does not synchronize with Creatio when integrating with the Microsoft 365 and Microsoft Exchange mail services? Select all that apply.","multiSelect":true,"answers":[{"id":1,"text":"Mail","correct":false},{"id":2,"text":"Contacts","correct":true},{"id":3,"text":"Calendars","correct":false},{"id":4,"text":"User files","correct":true}]},{"id":16,"subContentId":"775ea6f9-33cc-45a5-b2b1-136c4dbebae0","title":"What is the purpose of using integration with the LDAP catalog in Creatio?","question":"What is the purpose of using integration with the LDAP catalog in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Synchronization of the LDAP catalog elements with users and roles in Creatio","correct":true},{"id":2,"text":"Synchronization of user calendars in different devices and activities in Creatio","correct":false},{"id":3,"text":"Importing contact information from the LDAP catalog to Creatio","correct":false},{"id":4,"text":"Updating the client base","correct":false},{"id":5,"text":"Synchronization of data in different application localizations","correct":false}]},{"id":17,"subContentId":"e57c91fc-97ca-4ec1-a00c-9bd469423612","title":"Which of these integrations with third-party services are available in Creatio?","question":"Which of these integrations with third-party services are available in Creatio? Select all that apply.","multiSelect":true,"answers":[{"id":1,"text":"OData","correct":true},{"id":2,"text":"The \"Web-services\" functions in business processes","correct":true},{"id":3,"text":"Integrations through Cloud Service Store","correct":false},{"id":4,"text":"Due to security considerations, Creatio does not support integration","correct":false}]},{"id":18,"subContentId":"e80d33ac-ea9e-425e-a2dd-a29445ac65c7","title":"Which Creatio integrations are available out-of-the-box?","question":"Which Creatio integrations are available out-of-the-box? Select all that apply.","multiSelect":true,"answers":[{"id":1,"text":"IMAP/SMTP, MS Exchange email integration","correct":true},{"id":2,"text":"QlikView","correct":false},{"id":3,"text":"Messengers (Facebook, Telegram, WhatsApp)","correct":true},{"id":4,"text":"LDAP","correct":true},{"id":5,"text":"Contact synchronization between Google Contacts and Microsoft Exchange","correct":true},{"id":6,"text":"Mass mailing providers (SendGrid)","correct":true},{"id":7,"text":"Monitoring systems (Munin, Cacti)","correct":false},{"id":8,"text":"Calendar synchronization between Google Contacts and MS Exchange","correct":true}]},{"id":19,"subContentId":"862a85fa-ffc4-445e-b8fd-6f73a805053c","title":"Which DBMS does Creatio support?","question":"Which DBMS does Creatio support? Select all that apply.","multiSelect":true,"answers":[{"id":1,"text":"Microsoft SQL","correct":true},{"id":2,"text":"Oracle DB","correct":true},{"id":3,"text":"MySQL","correct":false},{"id":4,"text":"PostgreSQL","correct":true}]},{"id":20,"subContentId":"7bfd6feb-23f4-469c-9da2-0a5bb7f5ab74","title":"What is \u201cOn-site deployment\u201d in the Creatio terminology?","question":"What is \u201cOn-site deployment\u201d in the Creatio terminology?","multiSelect":false,"answers":[{"id":1,"text":"Deploying of application on the customer\u2019s servers","correct":true},{"id":2,"text":"Deploying of application on Creatio\u2019s servers","correct":false},{"id":3,"text":"Application operation in the SaaS model \u201cin the cloud\u201d of the vendor","correct":false},{"id":4,"text":"Deploying of the application test version","correct":false},{"id":5,"text":"Deploying of a certain application localization","correct":false}]},{"id":21,"subContentId":"cd48097b-a42d-40a7-97e7-02d3812907b3","title":"What is the purpose of the SVN in Creatio?","question":"What is the purpose of the subversion control server (SVN) in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Storing business data and configuration settings","correct":false},{"id":2,"text":"Storing the history of configuration states and transferring changes between configurations","correct":true},{"id":3,"text":"Storing service time information for the application server","correct":false}]},{"id":22,"subContentId":"a25ea60d-a14f-43a4-8455-9cbad79f0e7c","title":"What data caching server is used in Creatio?","question":"What data caching server is used in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"Memcached","correct":false},{"id":2,"text":"Redis","correct":true},{"id":3,"text":"Varnish","correct":false},{"id":4,"text":"XCache","correct":false}]},{"id":23,"subContentId":"ea845bd4-d29f-4c9c-b2e0-9e804d0bf677","title":"What browsers are used for working with Creatio products?","question":"What browsers are used for working with Creatio products on a user computer? Select all that apply.","multiSelect":true,"answers":[{"id":1,"text":"Google Chrome","correct":true},{"id":2,"text":"Mozilla Firefox","correct":true},{"id":3,"text":"Microsoft Edge","correct":true},{"id":4,"text":"Safari","correct":true}]},{"id":24,"subContentId":"eaaa8d44-dea4-4bcd-ab7a-fc7446dfc9d0","title":"What web services communication protocols are available for integration?","question":"What web services communication protocols are available for integration with Web services section? Select all that apply.","multiSelect":true,"answers":[{"id":1,"text":"SOAP","correct":true},{"id":2,"text":"WSFL","correct":false},{"id":3,"text":"UDDI","correct":false},{"id":4,"text":"REST","correct":true},{"id":5,"text":"BEEP","correct":false}]},{"id":25,"subContentId":"05cd688d-0be5-4791-a6f9-3cbedcf33b16","title":"Which of the following statements best describes the External B2B license?","question":"Which of the following statements best describes the External B2B license?","multiSelect":false,"answers":[{"id":1,"text":"A group corporate license allowing users from other organizations to have a limited access to platform","correct":false},{"id":2,"text":"This license is designed for company employees who to perform one type of tasks in Creatio","correct":false},{"id":3,"text":"A license that grants access to the counterparties users to a single selected section","correct":false},{"id":4,"text":"This is a license for a user from an outside organization who must work with certain records and sections of the platform","correct":true}]}]},{"ok":true,"pageTitle":"Sales Creatio Quiz","activityTitle":"Service Delivery management","href":"https://academy.creatio.com/group/23/module/58/restart-activity/73","itemId":"73","type":"restart-activity","contentId":37,"h5pLibrary":"H5P.QuestionSet 1.20","originalPoolSize":2,"totalQuestions":4,"randomQuestions":true,"progressType":"textual","questions":[{"id":1,"subContentId":"31c8ff9a-8300-4947-9afe-e0164ddb5a95","title":"What is the most correct approach to organizing the development of design solutions?","question":"What is the most correct approach to organizing the development of design solutions on the Creatio platform?","multiSelect":false,"answers":[{"id":1,"text":"It is recommended to use 3 environments (development, testing and production) in case of on-site deployment, and 2 environments (testing and production) in case of cloud deployment","correct":true},{"id":2,"text":"It is recommended to use the production environment for development, since package mechanics allows development without the threat of disrupting product operation","correct":false},{"id":3,"text":"It is recommended to use 2 environments (testing and production) for all types of deployment","correct":false}]},{"id":2,"subContentId":"abc5990f-7362-45ad-a790-9312b992496a","title":"What packages will be modified during a vendor (Creatio) update?","question":"What packages will be modified during a vendor (Creatio) update?","multiSelect":false,"answers":[{"id":1,"text":"Base packages","correct":true},{"id":2,"text":"Base and custom packages","correct":false},{"id":3,"text":"Updating does not affect the existing packages, it only creates new ones","correct":false},{"id":4,"text":"Custom packages","correct":false}]},{"id":3,"subContentId":"2e5b2609-d1a8-4ea0-8eee-6682cede52ed","title":"What is a base package in Creatio?","question":"What is a \"base package\" in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"One or more packages that deliver default Creatio features and functions","correct":true},{"id":2,"text":"Packages that store database data","correct":false},{"id":3,"text":"A package that is used for transferring changes between configurations","correct":false}]},{"id":4,"subContentId":"a1721508-30fc-4931-b79b-076026b047a6","title":"What is a package in Creatio?","question":"What is a package in Creatio?","multiSelect":false,"answers":[{"id":1,"text":"A system for storing cached data","correct":false},{"id":2,"text":"A set of vendor-developed solutions","correct":false},{"id":3,"text":"Data container storing configuration settings","correct":true},{"id":4,"text":"Access rights management system","correct":false}]}]},{"ok":true,"pageTitle":"Sales Creatio Quiz","activityTitle":"Relational data modeling","href":"https://academy.creatio.com/group/23/module/58/restart-activity/70","itemId":"70","type":"restart-activity","contentId":34,"h5pLibrary":"H5P.QuestionSet 1.20","originalPoolSize":1,"totalQuestions":6,"randomQuestions":true,"progressType":"textual","questions":[{"id":1,"subContentId":"4a2f80a4-1ac4-462b-b9de-cd8b15fa6996","title":"What are the different types of relationships in relational databases?","question":"What are the different types of relationships in relational databases?","multiSelect":true,"answers":[{"id":1,"text":"One-to-one","correct":true},{"id":2,"text":"One-to-many","correct":true},{"id":3,"text":"One-to-several","correct":false},{"id":4,"text":"Few-to-few","correct":false}]},{"id":2,"subContentId":"d0098dbd-d132-4f3d-be58-6e02ee6e0d11","title":"Connect multiple drivers to a single automobile","question":"You've created a section which stores data about cars for a taxi service. Describe a way to connect multiple drivers to a single automobile.","multiSelect":false,"answers":[{"id":1,"text":"Make a lookup for the Contacts section","correct":false},{"id":2,"text":"Task cannot be completed","correct":false},{"id":3,"text":"Create a separate object that stores information about a contact and an automobile","correct":true},{"id":4,"text":"Make a comma delineated text string","correct":false}]},{"id":3,"subContentId":"ee073a81-2347-4355-8111-3485eaa4e4d8","title":"Best way to store information about the source of a contact's revenue stream?","question":"What is the best way to store information about the source of a contact's revenue stream?","multiSelect":false,"answers":[{"id":1,"text":"Create a new record in the \"Accounts\" section for each revenue stream","correct":false},{"id":2,"text":"Make a text field called \"Revenue sources\" in the Contact section","correct":false},{"id":3,"text":"Create a separate object called 'Revenue sources' that can connect to Contacts","correct":true}]},{"id":4,"subContentId":"1eafc07e-e4f0-4f60-9716-faa09e0f7683","title":"Link articles to cases (many-to-many)","question":"There are 2 tables in the database: \"Cases\" and \"Knowledge Base Articles\". Your task is to link articles to cases so that you can later understand which cases are used in a particular knowledge-based article and which knowledge-based articles were used in a particular case. How would you set up such a relationship?","multiSelect":false,"answers":[{"id":1,"text":"Create an associative table to set up the relationship between cases and articles","correct":true},{"id":2,"text":"Create an \"Article\" column in Cases table","correct":false},{"id":3,"text":"Create a \"Cases\" column in Knowledge based article table","correct":false},{"id":4,"text":"The task cannot be resolved","correct":false}]},{"id":5,"subContentId":"fccd7ff1-9458-4c64-a287-cb71da2e1e09","title":"Relationship between drivers and automobiles in car sharing","question":"You've created a section which stores data about cars for a car sharing service. Describe an appropriate way to establish a relationship between drivers and automobiles that allows you to track which automobiles were used by a specific driver and track which drivers have used a specific automobile.","multiSelect":false,"answers":[{"id":1,"text":"Make a lookup for the Contacts section","correct":false},{"id":2,"text":"Task cannot be completed","correct":false},{"id":3,"text":"Create a separate object that stores information about a contact and an automobile","correct":true},{"id":4,"text":"Make a comma delineated text string","correct":false}]},{"id":6,"subContentId":"45f6749a-c73e-4a13-bd0e-8ddc64d41604","title":"Track tools borrowed by artisans","question":"You are managing an artisan workshop that allows artisans (referred to as Contacts) to borrow tools to work from home. You already have the \"Tools\" section. You need to track which tools are currently held by an artisan. Describe the simplest and most effective way to achieve this.","multiSelect":false,"answers":[{"id":1,"text":"Create a data model that will include both artisan and tool columns. Register it as a section to track the tools allocation.","correct":false},{"id":2,"text":"Add \"current artisan\" column to the \"Tools\" data model. Then add \"Tools\" list to the Contact page and filter that list by \"current artisan\" column.","correct":true},{"id":3,"text":"Add the \"Tools\" lookup on the Contact page.","correct":false},{"id":4,"text":"Create a data model and use it as a detail on the \"Tool\" to track this information.","correct":false}]}]},{"ok":true,"pageTitle":"Sales Creatio Quiz","activityTitle":"Business process modeling in Creatio","href":"https://academy.creatio.com/group/23/module/58/restart-activity/63","itemId":"63","type":"restart-activity","contentId":27,"h5pLibrary":"H5P.QuestionSet 1.20","originalPoolSize":2,"totalQuestions":10,"randomQuestions":true,"progressType":"textual","questions":[{"id":1,"question":"Your customer is a recycling plant that wants to automate requests for repair and maintenance of its equipment. Which Creatio product would you recommend and why?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":2,"question":"The client is a small online retailer who wants to manage orders in a CRM. What products and what blocks of Creatio functionality should be used for this?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":3,"question":"The client is a major retailer that wants to automate its marketing campaigns. Which Creatio product would you recommend as a solution?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":4,"question":"The client wants to automate email newsletters to get leads. What blocks of functionality and Creatio products should be used for this?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":5,"question":"Create a model business process to automate a taxi service: from calling a taxi to completing the trip. List the participants and stages of the process.","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":6,"question":"Please list the Creatio products and functionalities that you would recommend to a travel agency. Explain why.","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":7,"question":"The client is a Nonprofit organization that wants to attract an audience with the help of marketing communications (email, instant messengers) to events. Which Creatio product would you recommend?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":8,"question":"Your client is a car rental business. Which Creatio product would you recommend and why?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":9,"question":"Create a model business process for ordering pizza. Include as many stages and actors as necessary.","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":10,"question":"Your client is a luxury furniture manufacturer that creates custom interiors and furniture pieces. What Creatio product would you recommend for this client and why?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]}]},{"ok":true,"pageTitle":"Sales Creatio Quiz","activityTitle":"Requirements management","href":"https://academy.creatio.com/group/23/module/58/restart-activity/71","itemId":"71","type":"restart-activity","contentId":35,"h5pLibrary":"H5P.QuestionSet 1.20","originalPoolSize":1,"totalQuestions":6,"randomQuestions":true,"progressType":"textual","questions":[{"id":1,"question":"The client is a non-profit organization. What questions would you ask to gather technical design requirements for the project?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":2,"question":"The client provides software development and consulting services. What questions would you ask to gather technical design requirements for the project?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":3,"question":"The client is a real-estate agency. What questions would you ask to gather technical design requirements for the project?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":4,"question":"The client is an advertising agency. What questions would you ask to gather technical design requirements for the project?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":5,"question":"Your client is a travel agency. What questions would you ask to gather technical design requirements for the project?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":6,"question":"The client is an investment management agency. What questions would you ask to gather technical design requirements for the project?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]}]},{"ok":true,"pageTitle":"Sales Creatio Quiz","activityTitle":"Project Troubleshooting","href":"https://academy.creatio.com/group/23/module/58/restart-activity/69","itemId":"69","type":"restart-activity","contentId":33,"h5pLibrary":"H5P.QuestionSet 1.20","originalPoolSize":2,"totalQuestions":5,"randomQuestions":true,"progressType":"textual","questions":[{"id":1,"question":"What is the role of the business analyst after the launch of the project?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":2,"question":"During a discussion about the priorities for the next release, the customer asks about changes that will affect the platform functionality of Creatio, specifically those implemented in the base packages. What would you do in this situation?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":3,"question":"Your customer works with a cloud instance of the application and complains that the web site is not operational (though the Internet connection works fine). What are your actions?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":4,"question":"How would you avoid the negative reaction of end users when demonstrating the implemented solution?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]},{"id":5,"question":"You are a business analyst in an implemented Creatio project. The client informs you that sales managers do not use Creatio functionality to manage sales. What are your actions?","multiSelect":false,"answers":[{"id":1,"text":"Correct","correct":true},{"id":2,"text":"Incorrect","correct":false}]}]}]}
+</script>
+
+<script>
+// ── RAW DATA ──────────────────────────────────────────────────────────────────
+const RAW = JSON.parse(document.getElementById('quiz-data').textContent);
+
+
+// ── NORMALIZE ─────────────────────────────────────────────────────────────────
+function isOpenEnded(q) {
+  return q.answers.length === 2 && q.answers.every(function(a) {
+    return a.text === 'Correct' || a.text === 'Incorrect';
+  });
+}
+
+var quizzes = RAW.quizzes.map(function(q, i) {
+  return {
+    id: i,
+    title: q.activityTitle,
+    poolSize: q.originalPoolSize,
+    questions: q.questions.map(function(qu) {
+      return Object.assign({}, qu, { isOpen: isOpenEnded(qu) });
+    })
+  };
+});
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let activeQuizId = null;
+let mode = 'browse';
+let testState = null;
+
+// ── SIDEBAR ───────────────────────────────────────────────────────────────────
+function renderSidebar() {
+  document.getElementById('sidebar-nav').innerHTML = quizzes.map(q => `
+    <div class="nav-item${activeQuizId === q.id ? ' active' : ''}" onclick="selectQuiz(${q.id})">
+      <span class="material-icons">${q.questions.every(qu => qu.isOpen) ? 'edit_note' : 'assignment'}</span>
+      <div class="nav-item-text">
+        <div class="nav-item-title" title="${esc(q.title)}">${esc(q.title)}</div>
+        <div class="nav-item-subtitle">Pool: ${q.poolSize} of ${q.questions.length}</div>
+      </div>
+      <span class="badge">${q.questions.length}</span>
+    </div>
+  `).join('');
+}
+
+function selectQuiz(id) {
+  activeQuizId = id;
+  testState = null;
+  closeSidebar();
+  renderSidebar();
+  const quiz = quizzes[id];
+  document.getElementById('toolbar-title').textContent = quiz.title;
+  document.getElementById('toolbar-stats').innerHTML = `
+    <span class="chip"><span class="material-icons">help_outline</span>${quiz.questions.length} questions</span>
+    <span class="chip"><span class="material-icons">shuffle</span>Pool: ${quiz.poolSize}</span>
+  `;
+  document.getElementById('mode-toggle').style.display = 'flex';
+  if (mode === 'browse') renderBrowse(quiz); else startTest(quiz);
+}
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+  if (activeQuizId !== null) {
+    const quiz = quizzes[activeQuizId];
+    if (m === 'browse') { testState = null; renderBrowse(quiz); } else startTest(quiz);
+  }
+}
+
+// ── ESCAPE ────────────────────────────────────────────────────────────────────
+function esc(t) { const d = document.createElement('div'); d.appendChild(document.createTextNode(t)); return d.innerHTML; }
+
+// ── BROWSE ────────────────────────────────────────────────────────────────────
+function renderBrowse(quiz) {
+  const area = document.getElementById('content-area');
+  area.innerHTML = quiz.questions.map((q, i) => {
+    const type = q.isOpen ? 'open' : (q.multiSelect ? 'multi' : 'single');
+    const icon = q.isOpen ? 'edit' : (q.multiSelect ? 'check_box' : 'radio_button_checked');
+    const label = q.isOpen ? 'Open-ended' : (q.multiSelect ? 'Multiple choice' : 'Single choice');
+    const answersHtml = q.isOpen
+      ? `<div class="open-answer-box"><span class="material-icons">lightbulb</span><span>This is an open-ended question. Formulate your answer, then compare it with course materials or instructor feedback.</span></div>`
+      : `<ul class="answers-list">${q.answers.map(a => `
+          <li class="answer-item${a.correct ? ' correct' : ''}">
+            <span class="answer-icon"><span class="material-icons">${a.correct ? 'check_circle' : 'radio_button_unchecked'}</span></span>
+            <span class="answer-text">${esc(a.text)}</span>
+          </li>`).join('')}</ul>`;
+    return `
+      <div class="question-card" style="animation-delay:${Math.min(i*0.03,0.3)}s">
+        <div class="question-header">
+          <div class="question-number">${i+1}</div>
+          <div class="question-text">${esc(q.question)}</div>
+          <span class="question-type-badge ${type}"><span class="material-icons">${icon}</span>${label}</span>
+        </div>
+        ${answersHtml}
+      </div>`;
+  }).join('');
+  area.scrollTop = 0;
+}
+
+// ── TEST START ────────────────────────────────────────────────────────────────
+function startTest(quiz) {
+  const poolSize = Math.min(quiz.poolSize, quiz.questions.length);
+  var pool = Array.prototype.slice.call(quiz.questions).sort(function() { return Math.random() - 0.5; }).slice(0, poolSize);
+  testState = {
+    quizId: quiz.id,
+    questions: pool,
+    currentIndex: 0,
+    answers: pool.map(() => []),          // selected answer indices
+    openTexts: pool.map(() => ''),        // open-ended textarea text
+    checked: pool.map(() => false),
+    finished: false
+  };
+  renderTestQuestion();
+}
+
+function renderTestQuestion() {
+  if (!testState) return;
+  if (testState.finished) { renderTestResults(); return; }
+  const area = document.getElementById('content-area');
+  const q = testState.questions[testState.currentIndex];
+  const idx = testState.currentIndex;
+  const total = testState.questions.length;
+  const selected = testState.answers[idx];
+  const isChecked = testState.checked[idx];
+  const progress = ((idx + 1) / total) * 100;
+
+  let answersHtml;
+  if (q.isOpen) {
+    const txtVal = esc(testState.openTexts[idx]);
+    answersHtml = `
+      <div class="open-test-area">
+        <textarea id="open-textarea" placeholder="Type your answer here..."${isChecked ? ' class="checked" readonly' : ''}>${txtVal}</textarea>
+        ${isChecked ? `<div class="open-hint"><span class="material-icons">auto_awesome</span>Self-assess: compare your answer with the course materials. This question is evaluated by the instructor.</div>` : ''}
+      </div>`;
+  } else {
+    answersHtml = q.answers.map((a, ai) => {
+      let cls = 'test-answer-item';
+      if (!q.multiSelect) cls += ' single-choice';
+      if (selected.includes(ai)) cls += ' selected';
+      if (isChecked) {
+        cls += ' checked';
+        if (selected.includes(ai) && a.correct) cls += ' correct-selected';
+        else if (selected.includes(ai) && !a.correct) cls += ' wrong-selected';
+        else if (!selected.includes(ai) && a.correct) cls += ' correct-not-selected';
+      }
+      return `
+        <div class="${cls}" onclick="toggleAnswer(${ai})"${isChecked ? ' style="pointer-events:none;"' : ''}>
+          <div class="checkbox-icon"><span class="material-icons">check</span></div>
+          <span class="test-answer-text">${esc(a.text)}</span>
+        </div>`;
+    }).join('');
+  }
+
+  const canCheck = q.isOpen
+    ? (testState.openTexts[idx].trim().length > 0 || isChecked)
+    : selected.length > 0;
+
+  area.innerHTML = `
+    <div class="test-container">
+      <div class="test-progress">
+        <span class="progress-text">Question ${idx+1} of ${total}</span>
+        <div class="progress-bar-container"><div class="progress-bar" style="width:${progress}%"></div></div>
+        <span class="progress-text">${getAnsweredCount()}/${total} answered</span>
+      </div>
+      <div class="test-question-card">
+        <div class="question-header">
+          <div class="question-number">${idx+1}</div>
+          <div class="question-text">${esc(q.question)}</div>
+          <span class="question-type-badge ${q.isOpen ? 'open' : (q.multiSelect ? 'multi' : 'single')}">
+            <span class="material-icons">${q.isOpen ? 'edit' : (q.multiSelect ? 'check_box' : 'radio_button_checked')}</span>
+            ${q.isOpen ? 'Open-ended' : (q.multiSelect ? 'Multiple' : 'Single')}
+          </span>
+        </div>
+        ${answersHtml}
+      </div>
+      <div class="test-actions">
+        <button class="btn btn-text" onclick="prevQuestion()"${idx===0?' disabled':''}>
+          <span class="material-icons">arrow_back</span> Previous
+        </button>
+        <div style="display:flex;gap:8px;">
+          ${!isChecked ? `<button class="btn btn-primary" onclick="checkAnswer()"${canCheck?'':' disabled'}>
+            <span class="material-icons">done_all</span> Check
+          </button>` : ''}
+          ${idx < total-1
+            ? `<button class="btn btn-accent" onclick="nextQuestion()">Next <span class="material-icons">arrow_forward</span></button>`
+            : `<button class="btn btn-success" onclick="finishTest()"><span class="material-icons">flag</span> Finish</button>`}
+        </div>
+      </div>
+    </div>`;
+  area.scrollTop = 0;
+
+  // attach live listener for open textarea
+  if (q.isOpen && !isChecked) {
+    const ta = document.getElementById('open-textarea');
+    if (ta) ta.addEventListener('input', e => {
+      testState.openTexts[testState.currentIndex] = e.target.value;
+      // update check button state
+      const checkBtn = document.querySelector('.btn-primary');
+      if (checkBtn) checkBtn.disabled = e.target.value.trim().length === 0;
+    });
+  }
+}
+
+function toggleAnswer(ai) {
+  if (!testState || testState.checked[testState.currentIndex]) return;
+  const idx = testState.currentIndex;
+  const q = testState.questions[idx];
+  const sel = testState.answers[idx];
+  if (q.multiSelect) {
+    const pos = sel.indexOf(ai);
+    pos >= 0 ? sel.splice(pos, 1) : sel.push(ai);
+  } else {
+    testState.answers[idx] = [ai];
+  }
+  renderTestQuestion();
+}
+
+function checkAnswer() {
+  if (!testState) return;
+  const idx = testState.currentIndex;
+  const q = testState.questions[idx];
+  if (q.isOpen) {
+    // save textarea value before marking checked
+    const ta = document.getElementById('open-textarea');
+    if (ta) testState.openTexts[idx] = ta.value;
+    // mark as answered (auto-correct for scoring)
+    testState.answers[idx] = [0]; // index 0 = "Correct"
+  }
+  testState.checked[idx] = true;
+  renderTestQuestion();
+}
+
+function nextQuestion() {
+  if (!testState || testState.currentIndex >= testState.questions.length - 1) return;
+  testState.currentIndex++;
+  renderTestQuestion();
+}
+
+function prevQuestion() {
+  if (!testState || testState.currentIndex <= 0) return;
+  testState.currentIndex--;
+  renderTestQuestion();
+}
+
+function getAnsweredCount() {
+  return testState ? testState.checked.filter(Boolean).length : 0;
+}
+
+function isQuestionCorrect(qi) {
+  const q = testState.questions[qi];
+  if (q.isOpen) return testState.checked[qi]; // open = always "correct" if answered
+  const sel = testState.answers[qi];
+  const correct = q.answers.map((a, i) => a.correct ? i : -1).filter(i => i >= 0);
+  return sel.length === correct.length && sel.every(s => correct.includes(s));
+}
+
+function finishTest() {
+  if (!testState) return;
+  // save open text if on that question
+  const q = testState.questions[testState.currentIndex];
+  if (q && q.isOpen) {
+    const ta = document.getElementById('open-textarea');
+    if (ta) testState.openTexts[testState.currentIndex] = ta.value;
+    if (!testState.checked[testState.currentIndex] && testState.openTexts[testState.currentIndex].trim()) {
+      testState.answers[testState.currentIndex] = [0];
+      testState.checked[testState.currentIndex] = true;
+    }
+  }
+  testState.checked = testState.checked.map(() => true);
+  testState.finished = true;
+  renderTestResults();
+}
+
+function renderTestResults() {
+  const area = document.getElementById('content-area');
+  const total = testState.questions.length;
+  const openCount = testState.questions.filter(q => q.isOpen).length;
+  const mcCount = total - openCount;
+  let mcCorrect = 0;
+  testState.questions.forEach((q, i) => { if (!q.isOpen && isQuestionCorrect(i)) mcCorrect++; });
+  const pct = mcCount > 0 ? Math.round((mcCorrect / mcCount) * 100) : 100;
+  const circumference = 2 * Math.PI * 70;
+  const offset = circumference - (pct / 100) * circumference;
+  const passed = pct >= 70;
+  const color = mcCount === 0 ? 'var(--open-color)' : (passed ? 'var(--success)' : 'var(--error)');
+  const displayPct = mcCount === 0 ? '—' : pct + '%';
+
+  area.innerHTML = `
+    <div class="score-card">
+      <div class="score-circle">
+        <svg viewBox="0 0 160 160" width="100%" height="100%">
+          <circle cx="80" cy="80" r="70" fill="none" stroke="#e0e0e0" stroke-width="8"/>
+          <circle cx="80" cy="80" r="70" fill="none" stroke="${color}" stroke-width="8"
+            stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
+            stroke-linecap="round" style="transition:stroke-dashoffset 1s ease;"/>
+        </svg>
+        <div class="score-value" style="color:${color}">${displayPct}</div>
+        <div class="score-label">Score</div>
+      </div>
+      <h2>${mcCount === 0 ? 'All answered!' : (passed ? 'Great job!' : 'Keep practicing!')}</h2>
+      <p>${mcCount === 0 ? 'This quiz contains open-ended questions only. Review your answers below.' : (passed ? 'You passed this practice test.' : 'You need 70% or higher to pass. Review the questions and try again.')}</p>
+      <div class="score-details">
+        ${mcCount > 0 ? `
+          <div class="score-detail correct"><div class="value">${mcCorrect}</div><div class="label">Correct</div></div>
+          <div class="score-detail wrong"><div class="value">${mcCount - mcCorrect}</div><div class="label">Wrong</div></div>
+        ` : ''}
+        ${openCount > 0 ? `<div class="score-detail open-q"><div class="value">${openCount}</div><div class="label">Open-ended</div></div>` : ''}
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="startTest(quizzes[${testState.quizId}])">
+          <span class="material-icons">refresh</span> Retry
+        </button>
+        <button class="btn btn-outline" onclick="reviewTest()">
+          <span class="material-icons">visibility</span> Review
+        </button>
+      </div>
+    </div>`;
+  area.scrollTop = 0;
+}
+
+function reviewTest() {
+  const area = document.getElementById('content-area');
+  area.innerHTML = `
+    <div class="test-container">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:8px;">
+        <button class="btn btn-outline" onclick="renderTestResults()"><span class="material-icons">arrow_back</span> Results</button>
+        <button class="btn btn-primary" onclick="startTest(quizzes[${testState.quizId}])"><span class="material-icons">refresh</span> Retry</button>
+      </div>
+      ${testState.questions.map((q, i) => {
+        const ok = isQuestionCorrect(i);
+        const borderColor = q.isOpen ? 'var(--open-color)' : (ok ? 'var(--success)' : 'var(--error)');
+        const numBg = q.isOpen ? 'var(--open-color)' : (ok ? 'var(--success)' : 'var(--error)');
+        const icon = q.isOpen ? 'edit_note' : (ok ? 'check_circle' : 'cancel');
+        const iconColor = q.isOpen ? 'var(--open-color)' : (ok ? 'var(--success)' : 'var(--error)');
+
+        let body;
+        if (q.isOpen) {
+          body = `
+            <div style="margin-top:12px;">
+              <div style="font-size:12px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Your answer:</div>
+              <div style="background:var(--open-bg);border-radius:6px;padding:12px 14px;color:var(--open-color);font-size:14px;line-height:1.6;white-space:pre-wrap;">${esc(testState.openTexts[i]) || '<em style="opacity:0.6">No answer provided</em>'}</div>
+              <div class="open-answer-box" style="margin-top:8px;"><span class="material-icons">lightbulb</span>Compare with your instructor or course materials.</div>
+            </div>`;
+        } else {
+          const sel = testState.answers[i];
+          body = `<ul class="answers-list" style="margin-top:12px;">${q.answers.map((a, ai) => {
+            const wasSelected = sel.includes(ai);
+            const cls = 'answer-item' + (a.correct ? ' correct' : '');
+            const icn = a.correct ? 'check_circle' : (wasSelected ? 'cancel' : 'radio_button_unchecked');
+            const extra = wasSelected && !a.correct ? 'color:var(--error);font-weight:500;' : '';
+            return `<li class="${cls}" style="${extra}">
+              <span class="answer-icon"><span class="material-icons" style="${wasSelected && !a.correct ? 'color:var(--error)' : ''}">${icn}</span></span>
+              <span class="answer-text" style="${extra}">${esc(a.text)}${wasSelected ? ' <em style="opacity:0.6">(your choice)</em>' : ''}</span>
+            </li>`;
+          }).join('')}</ul>`;
+        }
+
+        return `
+          <div class="question-card" style="border-left:4px solid ${borderColor};animation-delay:${Math.min(i*0.03,0.3)}s">
+            <div class="question-header">
+              <div class="question-number" style="background:${numBg}">${i+1}</div>
+              <div class="question-text">${esc(q.question)}</div>
+              <span class="material-icons" style="font-size:28px;color:${iconColor}">${icon}</span>
+            </div>
+            ${body}
+          </div>`;
+      }).join('')}
+    </div>`;
+  area.scrollTop = 0;
+}
+
+// ── MOBILE ────────────────────────────────────────────────────────────────────
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('visible');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('visible');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+try {
+  renderSidebar();
+  if (!quizzes || quizzes.length === 0) {
+    throw new Error('quizzes array is empty');
+  }
+} catch(e) {
+  console.error('INIT ERROR:', e);
+  // Show error in nav for debugging
+  var nav = document.getElementById('sidebar-nav');
+  if (nav) {
+    nav.innerHTML = '<div style="padding:16px;color:#f88;font-size:12px;">JS Error: ' + e.message + '</div>';
+  }
+}
+
+// ── iOS / COMPAT FIXES ────────────────────────────────────────────────────────
+// Fix 1: Real viewport height (iOS Safari address bar issue)
+function fixHeight() {
+  var h = window.innerHeight;
+  var app = document.querySelector('.app-layout');
+  var sb = document.getElementById('sidebar');
+  if (app) app.style.height = h + 'px';
+  if (sb) sb.style.height = h + 'px';
+}
+fixHeight();
+window.addEventListener('resize', fixHeight);
+window.addEventListener('orientationchange', function() {
+  setTimeout(fixHeight, 100);
+  setTimeout(fixHeight, 400);
+});
+
+// Fix 2: Make divs clickable on iOS Safari (needs touchstart on document)
+document.addEventListener('touchstart', function() {}, { passive: true });
+
+// Fix 3: Prefixed animation for older Safari
+var style = document.createElement('style');
+style.textContent = '@-webkit-keyframes fadeInUp { from { opacity:0; -webkit-transform:translateY(12px); } to { opacity:1; -webkit-transform:translateY(0); } }';
+document.head.appendChild(style);
+
+// Fix 3: Material Icons fallback map (when CDN not loaded from local file)
+(function() {
+  var iconMap = {
+    'menu': '☰', 'school': '🎓', 'assignment': '📋', 'edit_note': '✏️',
+    'menu_book': '📖', 'quiz': '❓', 'help_outline': '❓', 'shuffle': '🔀',
+    'check_circle': '✓', 'radio_button_unchecked': '○', 'check_box': '☑',
+    'radio_button_checked': '◉', 'edit': '✏', 'lightbulb': '💡',
+    'check': '✓', 'arrow_back': '←', 'arrow_forward': '→', 'done_all': '✓✓',
+    'flag': '⚑', 'refresh': '↺', 'visibility': '👁', 'cancel': '✗',
+    'auto_awesome': '✨', 'check_circle_outline': '✓'
+  };
+  // Test if Material Icons loaded
+  var testEl = document.createElement('span');
+  testEl.className = 'material-icons';
+  testEl.style.cssText = 'position:absolute;visibility:hidden;font-size:24px';
+  testEl.textContent = 'check';
+  document.body.appendChild(testEl);
+  setTimeout(function() {
+    var w = testEl.offsetWidth;
+    document.body.removeChild(testEl);
+    // If width is around 24px, icon font loaded. If much smaller, it hasn't.
+    if (w < 20) {
+      // Font not loaded — add CSS fallback
+      document.querySelectorAll('.material-icons').forEach(function(el) {
+        var key = el.textContent.trim();
+        if (iconMap[key]) el.textContent = iconMap[key];
+        el.style.fontFamily = 'sans-serif';
+        el.style.fontStyle = 'normal';
+      });
+      // Observer for dynamically added icons
+      var observer = new MutationObserver(function(muts) {
+        muts.forEach(function(m) {
+          m.addedNodes.forEach(function(n) {
+            if (!n.querySelectorAll) return;
+            n.querySelectorAll('.material-icons').forEach(function(el) {
+              var key = el.textContent.trim();
+              if (iconMap[key]) { el.textContent = iconMap[key]; el.style.fontFamily = 'sans-serif'; el.style.fontStyle = 'normal'; }
+            });
+          });
+        });
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
+  }, 1500);
+}());
+</script>
+</body>
+</html>
